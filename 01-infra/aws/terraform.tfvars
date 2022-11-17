@@ -1,0 +1,1 @@
+tale="red-riding-hood"

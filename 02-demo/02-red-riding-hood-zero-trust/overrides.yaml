@@ -1,0 +1,72 @@
+# Default values for little-goldie.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Global variables
+replicaCount: 1
+
+main:
+  extralabels:
+    bobinette: pull
+
+  image:
+    repository: ghcr.io/sphinxgaia/little-red-riding-hood-goldie-main
+    pullPolicy: Always
+    tag: "green"
+
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: traefik
+    hosts:
+      - host: red-trust.sphinxgaia.jeromemasson.fr
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+
+  extraEnvs:
+  - name: VERSION
+    value: "red"
+
+  service:
+    annotations:
+      external-dns.alpha.kubernetes.io/hostname: red-trust.aws.sphinxgaia.jeromemasson.fr
+    type: LoadBalancer
+    port: 80
+
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: red-archi
+            operator: In
+            values:
+            - enabled
+
+body:
+  extralabels:
+    bobinette: pull
+  image:
+    repository: ghcr.io/sphinxgaia/little-red-riding-hood-goldie-body
+    pullPolicy: Always
+    tag: "green"
+
+  initContainer:
+    enabled: true
+    timer: 10
+    
+  extraEnvs:
+  - name: VERSION
+    value: "red"
+
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: red-archi
+            operator: In
+            values:
+            - enabled
+
