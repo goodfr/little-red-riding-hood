@@ -215,3 +215,9 @@ output "creds" {
   value = aws_iam_access_key.vault
   description = "iam connexion for auto unseal KMS"
 }
+
+output "admins" {
+  sensitive = true
+  value = aws_iam_access_key.admins
+  description = "iam connexion for admin"
+}

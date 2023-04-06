@@ -1,4 +1,6 @@
 *.terraform
 *.terraform.lock*
 *terraform.tfstate*
-*kubeconfig
+*kubeconfig*
+*-kubeconfig.yaml
+*vcluster-*.yaml

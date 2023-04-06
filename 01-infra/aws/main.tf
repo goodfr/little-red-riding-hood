@@ -40,6 +40,17 @@ module "eks" {
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
 
+
+  aws_auth_users = concat([ for u in aws_iam_user.admins: {
+    userarn = u.arn
+    username = u.name
+    groups   = ["system:masters"]
+  }], [ for u in aws_iam_user.groups: {
+    userarn = u.arn
+    username = u.name
+    groups   = [u.name, "capsule.clastix.io"]
+  }])
+
   cluster_addons = {
     # coredns = {
     #   resolve_conflicts = "OVERWRITE"
@@ -381,8 +392,85 @@ data "aws_iam_policy_document" "vault-kms-unseal" {
   }
 }
 
+# User                                            #
+###################################################
+
+# Kubernetes User
+resource "aws_iam_user" "admins" {
+  count = 3
+  name = "admin${count.index}"
+
+  tags = local.tags 
+}
+# Generate credential for vault user
+resource "aws_iam_access_key" "admins" {
+  count = 3
+  user = aws_iam_user.admins[count.index].name
+}
+
+# User inline policy mapping
+resource "aws_iam_user_policy" "admin_kube" {
+  count = 3
+
+  name =  "admin-kube"
+  user   = aws_iam_user.admins[count.index].name
+  policy = data.aws_iam_policy_document.admin_kube.json
+}
+
+# Inline policy document 
+data "aws_iam_policy_document" "admin_kube" {
+  statement {
+    sid       = "adminKube"
+    effect    = "Allow"
+    resources = ["*"]
+
+    actions = [
+      "eks:*",
+      "ecr:*"
+    ]
+  }
+}
+
+# Kubernetes User
+resource "aws_iam_user" "groups" {
+  count = 20
+  name = "group${count.index}"
+
+  tags = local.tags 
+}
+
+# Generate credential for vault user
+resource "aws_iam_access_key" "groups" {
+  count = 20
+  user = aws_iam_user.groups[count.index].name
+}
+
+# User inline policy mapping
+resource "aws_iam_user_policy" "groups_kube" {
+  count = 20
+
+  name =  "groups-kube"
+  user   = aws_iam_user.groups[count.index].name
+  policy = data.aws_iam_policy_document.groups_kube.json
+}
+
+# Inline policy document 
+data "aws_iam_policy_document" "groups_kube" {
+  statement {
+    sid       = "groupsKube"
+    effect    = "Allow"
+    resources = ["*"]
+
+    actions = [
+      "eks:DescribeCluster",
+      "eks:ListClusters",
+      "ecr:*"
+    ]
+  }
+}
+
 resource "aws_security_group_rule" "webhook_vault" {
-  description = "Vault Injector configuration"
+  description = "Vault Injector & Capsule configuration"
   type              = "ingress"
   from_port         = 8080
   to_port           = 8080
@@ -390,4 +478,35 @@ resource "aws_security_group_rule" "webhook_vault" {
   source_security_group_id = module.eks.cluster_security_group_id
   security_group_id = module.eks.node_security_group_id
   
+}
+
+# resource "aws_security_group_rule" "webhook_capsule" {
+#   description = "Capsule configuration"
+#   type              = "ingress"
+#   from_port         = 9443
+#   to_port           = 9443
+#   protocol          = "tcp"
+#   source_security_group_id = module.eks.cluster_security_group_id
+#   security_group_id = module.eks.node_security_group_id
+  
+# }
+
+resource "aws_security_group_rule" "linkerd_viz_8089" {
+  description              = "Linkerd Viz configuration"
+  type                     = "ingress"
+  from_port                = 8086
+  to_port                  = 8090
+  protocol                 = "tcp"
+  source_security_group_id = module.eks.cluster_security_group_id
+  security_group_id        = module.eks.node_security_group_id
+}
+
+resource "aws_security_group_rule" "linkerd_viz_8443" {
+  description              = "Linkerd Viz configuration - port 8443"
+  type                     = "ingress"
+  from_port                = 8443
+  to_port                  = 8443
+  protocol                 = "tcp"
+  source_security_group_id = module.eks.cluster_security_group_id
+  security_group_id        = module.eks.node_security_group_id
 }

@@ -32,4 +32,4 @@ spec:
                   bobinette: pull
               spec:
                 containers:
-                - image: "ghcr.io/sphinxgaia/little-three-goldie-*:red|ghcr.io/sphinxgaia/little-three-goldie-*:green|ghcr.io/sphinxgaia/little-red-riding-hood-*:red|ghcr.io/sphinxgaia/little-red-riding-hood-*:green|*alpine*"
+                - image: "ghcr.io/sphinxgaia/little-red-riding-hood-*:red|ghcr.io/sphinxgaia/little-red-riding-hood-*:green"

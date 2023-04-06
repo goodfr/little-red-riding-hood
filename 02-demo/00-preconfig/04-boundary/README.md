@@ -11,7 +11,7 @@ Run terraform apply against the kubernetes terraform module:
 aws-vault exec custom -- kubectl create ns boundary
 aws-vault exec custom -- terraform apply -target module.kubernetes -auto-approve
 
-export BOUNDARY_ADDR="http://a4df28fab8b0a43b892465b3f3753b16-114862541.eu-west-1.elb.amazonaws.com:9200" 
+export BOUNDARY_ADDR="http://ac6c7a66b9daf4986939b7e7dae09ff0-1723290738.eu-west-1.elb.amazonaws.com:9200" 
 aws-vault exec custom -- terraform apply -auto-approve
 ```
 

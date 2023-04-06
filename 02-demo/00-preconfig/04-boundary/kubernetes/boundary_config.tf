@@ -22,7 +22,7 @@ worker {
 	description = "A worker for a kubernetes demo"
 	address = "localhost"
     controllers = ["localhost"]
-	public_addr = "localhost"
+	public_addr = "ac6c7a66b9daf4986939b7e7dae09ff0-1723290738.eu-west-1.elb.amazonaws.com"
 }
 
 listener "tcp" {

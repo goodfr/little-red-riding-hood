@@ -19,26 +19,3 @@ spec:
         image: nginx:1.14.2
         ports:
         - containerPort: 80
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: goldie-deployment
-  labels:
-    app: goldie
-spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: goldie
-  template:
-    metadata:
-      labels:
-        app: goldie
-        bobinette: pull
-    spec:
-      containers:
-      - name: goldie
-        image: ghcr.io/sphinxgaia/little-three-goldie-main:red
-        ports:
-        - containerPort: 80

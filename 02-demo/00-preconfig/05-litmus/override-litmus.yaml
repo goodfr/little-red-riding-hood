@@ -1,9 +1,0 @@
-portal:
-  server:
-    service:
-      type: ClusterIP
-  frontend:
-    service:
-      annotations:
-        external-dns.alpha.kubernetes.io/hostname: litmus.aws.sphinxgaia.jeromemasson.fr
-      type: LoadBalancer

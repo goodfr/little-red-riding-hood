@@ -1,0 +1,129 @@
+apiVersion: kyverno.io/v1
+# The `ClusterPolicy` kind applies to the entire cluster.
+kind: ClusterPolicy
+metadata:
+  name: requirements-red
+# The `spec` defines properties of the policy.
+spec:
+  # The `validationFailureAction` tells Kyverno if the resource being validated should be allowed but reported (`audit`) or blocked (`enforce`).
+  validationFailureAction: audit
+  # The `rules` is one or more rules which must be true.
+  rules:
+    - name: require-red-label
+      # The `match` statement sets the scope of what will be checked. In this case, it is any `Namespace` resource.
+      match:
+        all:
+        - resources:
+            kinds:
+            - Deployment
+            # namespaces:
+            # - "red-zero-trust"
+            # - "green-zero-trust"
+      # The `validate` statement tries to positively check what is defined. If the statement, when compared with the requested resource, is true, it is allowed. If false, it is blocked.
+      validate:
+        # The `message` is what gets displayed to a user if this rule fails validation and is therefore blocked.
+        message: "You must have label `bobinette` with value `pull` set on all new namespaces and use a specific image"
+        # The `pattern` object defines what pattern will be checked in the resource. In this case, it is looking for `metadata.labels` with `purpose=production`.
+        pattern:
+          spec:
+            template:
+              metadata:
+                labels:
+                  bobinette: pull
+              spec:
+                containers:
+                - image: "ghcr.io/sphinxgaia/little-red-riding-hood-*:red|ghcr.io/sphinxgaia/little-red-riding-hood-*:green"
+---
+apiVersion: kyverno.io/v1
+# The `ClusterPolicy` kind applies to the entire cluster.
+kind: ClusterPolicy
+metadata:
+  name: ingress-external-dns-red
+# The `spec` defines properties of the policy.
+spec:
+  # The `validationFailureAction` tells Kyverno if the resource being validated should be allowed but reported (`audit`) or blocked (`enforce`).
+  validationFailureAction: enforce
+  # The `rules` is one or more rules which must be true.
+  rules:
+    - name:  ingress-external-dns-red
+      # The `match` statement sets the scope of what will be checked. In this case, it is any `Namespace` resource.
+      match:
+        all:
+        - resources:
+            kinds:
+            - Ingress
+            # namespaces:
+            # - "red-zero-trust"
+            # - "green-zero-trust"
+      # The `validate` statement tries to positively check what is defined. If the statement, when compared with the requested resource, is true, it is allowed. If false, it is blocked.
+      validate:
+        # The `message` is what gets displayed to a user if this rule fails validation and is therefore blocked.
+        message: "You must have annotations for external DNS like external-dns.alpha.kubernetes.io/hostname: vcluster-userx-red.aws.sphinxgaia.jeromemasson.fr"
+        # The `pattern` object defines what pattern will be checked in the resource. In this case, it is looking for `metadata.labels` with `purpose=production`.
+        pattern:
+          metadata:
+            annotations:
+              external-dns.alpha.kubernetes.io/hostname: "{{ request.object.metadata.namespace }}*?.sphinxgaia.jeromemasson.fr"
+---
+apiVersion: kyverno.io/v1
+# The `ClusterPolicy` kind applies to the entire cluster.
+kind: ClusterPolicy
+metadata:
+  name: ingress-red
+# The `spec` defines properties of the policy.
+spec:
+  # The `validationFailureAction` tells Kyverno if the resource being validated should be allowed but reported (`audit`) or blocked (`enforce`).
+  validationFailureAction: enforce
+  # The `rules` is one or more rules which must be true.
+  rules:
+    - name:  ingress-red
+      # The `match` statement sets the scope of what will be checked. In this case, it is any `Namespace` resource.
+      match:
+        all:
+        - resources:
+            kinds:
+            - Ingress
+            # namespaces:
+            # - "red-zero-trust"
+            # - "green-zero-trust"
+      # The `validate` statement tries to positively check what is defined. If the statement, when compared with the requested resource, is true, it is allowed. If false, it is blocked.
+      validate:
+        # The `message` is what gets displayed to a user if this rule fails validation and is therefore blocked.
+        message: "You must have host like vcluster-userx-red.aws.sphinxgaia.jeromemasson.fr"
+        # The `pattern` object defines what pattern will be checked in the resource. In this case, it is looking for `metadata.labels` with `purpose=production`.
+        pattern:
+          spec:
+            ingressClassName: nginx 
+            rules:
+              - host: "{{ request.object.metadata.namespace }}*?.sphinxgaia.jeromemasson.fr"
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disallow-empty-ingress-host
+  annotations:
+    policies.kyverno.io/title: Disallow empty Ingress host
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Ingress
+    policies.kyverno.io/description: >-
+      An ingress resource needs to define an actual host name
+      in order to be valid. This policy ensures that there is a
+      hostname for each rule defined.      
+spec:
+  validationFailureAction: enforce
+  rules:
+    - name: disallow-empty-ingress-host
+      match:
+        any:
+        - resources:
+            kinds:
+              - Ingress
+      validate:
+        message: "The Ingress host name must be defined, not empty."
+        deny:
+          conditions:
+            - key: "{{ request.object.spec.rules[].host || `[]` | length(@) }}"
+              operator: NotEquals
+              value: "{{ request.object.spec.rules[].http || `[]` | length(@) }}"

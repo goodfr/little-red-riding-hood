@@ -1,13 +1,12 @@
 ---
 # 3 replicas for High Availability
-replicaCount: 3
+replicaCount: 1
 
 # Necessary in EKS with custom Network CNI plugin
 # https://cert-manager.io/docs/installation/compatibility/#aws-eks
 # hostNetwork: true
 
 config:
-
   webhooks:
     # Exclude namespaces from scope
     - namespaceSelector:
@@ -20,6 +19,7 @@ config:
             - litmus
             - vault
             - trivy-system
+            - linkerd
             - boundary
             - red
             - green

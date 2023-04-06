@@ -11,8 +11,8 @@ resource "boundary_scope" "org" {
 }
 
 resource "boundary_scope" "project" {
-  name                     = "databases"
-  description              = "Databases project"
+  name                     = "eks"
+  description              = "EKS private endpoint project"
   scope_id                 = boundary_scope.org.id
   auto_create_admin_role   = true
   auto_create_default_role = true

@@ -1,9 +1,15 @@
 ---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: green
+---
 # Source: little-red-riding-hood-goldie/templates/body-server_sa.yaml
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: red-little-red-riding-hood-goldie-body
+  namespace: red
   labels:
     helm.sh/chart: little-red-riding-hood-goldie-0.1.0
     app.kubernetes.io/version: "0.0.1"
@@ -16,6 +22,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: red-little-red-riding-hood-goldie-main
+  namespace: red
   labels:
     helm.sh/chart: little-red-riding-hood-goldie-0.1.0
     app.kubernetes.io/version: "0.0.1"
@@ -29,6 +36,7 @@ kind: Service
 metadata:
   # connection between main and body / must be static for the moment
   name: goldie-body
+  namespace: red
   labels:
     kubernetes.io/instance: body-server
     helm.sh/chart: little-red-riding-hood-goldie-0.1.0
@@ -53,8 +61,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: red-little-red-riding-hood-goldie-main
-  annotations:
-        external-dns.alpha.kubernetes.io/hostname: red.aws.sphinxgaia.jeromemasson.fr
+  namespace: red
   labels:
     kubernetes.io/instance: main-server
     helm.sh/chart: little-red-riding-hood-goldie-0.1.0
@@ -63,7 +70,7 @@ metadata:
     app.kubernetes.io/name: little-red-riding-hood-goldie-main
     app.kubernetes.io/instance: red-main
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
     - port: 80
       targetPort: http
@@ -78,6 +85,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: little-red-riding-hood-goldie-body
+  namespace: red
   labels:
     app.kubernetes.io/component: body-server
     bobinette: pull
@@ -95,6 +103,7 @@ spec:
   template:
     metadata:
       labels:
+        bobinette: pull
         app.kubernetes.io/component: body-server
         app.kubernetes.io/name: little-red-riding-hood-goldie-body
         app.kubernetes.io/instance: red-body
@@ -147,6 +156,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: little-red-riding-hood-goldie-main
+  namespace: red
   labels:
     app.kubernetes.io/component: main-server
     bobinette: pull
@@ -164,6 +174,7 @@ spec:
   template:
     metadata:
       labels:
+        bobinette: pull
         app.kubernetes.io/component: main-server
         app.kubernetes.io/name: little-red-riding-hood-goldie-main
         app.kubernetes.io/instance: red-main
@@ -208,60 +219,24 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: red-little-red-riding-hood-goldie
+  name: little-red-riding-hood-goldie
+  namespace: red
   labels:
     helm.sh/chart: little-red-riding-hood-goldie-0.1.0
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
   annotations:
-    kubernetes.io/ingress.class: traefik
+    external-dns.alpha.kubernetes.io/hostname: vcluster-test-red.aws.sphinxgaia.jeromemasson.fr # give your domain name here
 spec:
+  ingressClassName: nginx 
   rules:
-    - host: "red.sphinxgaia.jeromemasson.fr"
+    - host: "vcluster-test-red.aws.sphinxgaia.jeromemasson.fr"
       http:
         paths:
-          - path: /
+          - path: /*
             pathType: ImplementationSpecific
             backend:
               service:
                 name: red-little-red-riding-hood-goldie-main
                 port:
                   number: 80
----
-# Source: little-red-riding-hood-goldie/templates/tests/test-connection-body.yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: "red-little-red-riding-hood-goldie-test-connection-body"
-  labels:
-    helm.sh/chart: little-red-riding-hood-goldie-0.1.0
-    app.kubernetes.io/version: "0.0.1"
-    app.kubernetes.io/managed-by: Helm
-  annotations:
-    "helm.sh/hook": test
-spec:
-  containers:
-    - name: wget
-      image: busybox
-      command: ['wget']
-      args: ['red-little-red-riding-hood-goldie-body:80']
-  restartPolicy: Never
----
-# Source: little-red-riding-hood-goldie/templates/tests/test-connection-main.yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: "red-little-red-riding-hood-goldie-test-connection-main"
-  labels:
-    helm.sh/chart: little-red-riding-hood-goldie-0.1.0
-    app.kubernetes.io/version: "0.0.1"
-    app.kubernetes.io/managed-by: Helm
-  annotations:
-    "helm.sh/hook": test
-spec:
-  containers:
-    - name: wget
-      image: busybox
-      command: ['wget']
-      args: ['red-little-red-riding-hood-goldie-main:80']
-  restartPolicy: Never
