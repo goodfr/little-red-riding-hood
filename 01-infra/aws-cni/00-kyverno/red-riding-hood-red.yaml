@@ -58,12 +58,12 @@ spec:
       # The `validate` statement tries to positively check what is defined. If the statement, when compared with the requested resource, is true, it is allowed. If false, it is blocked.
       validate:
         # The `message` is what gets displayed to a user if this rule fails validation and is therefore blocked.
-        message: "You must have annotations for external DNS like external-dns.alpha.kubernetes.io/hostname: vcluster-userx-red.aws.sphinxgaia.jeromemasson.fr"
+        message: "You must have annotations for external DNS like external-dns.alpha.kubernetes.io/hostname: {{ request.namespace }}-red.aws.sphinxgaia.jeromemasson.fr"
         # The `pattern` object defines what pattern will be checked in the resource. In this case, it is looking for `metadata.labels` with `purpose=production`.
         pattern:
           metadata:
             annotations:
-              external-dns.alpha.kubernetes.io/hostname: "{{ request.object.metadata.namespace }}*?.sphinxgaia.jeromemasson.fr"
+              external-dns.alpha.kubernetes.io/hostname: "{{ request.namespace }}*?.sphinxgaia.jeromemasson.fr"
 ---
 apiVersion: kyverno.io/v1
 # The `ClusterPolicy` kind applies to the entire cluster.
@@ -89,13 +89,13 @@ spec:
       # The `validate` statement tries to positively check what is defined. If the statement, when compared with the requested resource, is true, it is allowed. If false, it is blocked.
       validate:
         # The `message` is what gets displayed to a user if this rule fails validation and is therefore blocked.
-        message: "You must have host like vcluster-userx-red.aws.sphinxgaia.jeromemasson.fr"
+        message: "You must have host: {{ request.object.spec.rules[0].host }} like {{ request.namespace }}-red.aws.sphinxgaia.jeromemasson.fr"
         # The `pattern` object defines what pattern will be checked in the resource. In this case, it is looking for `metadata.labels` with `purpose=production`.
         pattern:
           spec:
             ingressClassName: nginx 
             rules:
-              - host: "{{ request.object.metadata.namespace }}*?.sphinxgaia.jeromemasson.fr"
+            - host: "{{ request.namespace }}*?.sphinxgaia.jeromemasson.fr"
 ---
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
