@@ -1,4 +1,4 @@
-# Linkerd
+![Linkerd](../../images/linkerd_logo.png)
 
 ## Installation du projet exemple dans le namespace dédié
 
