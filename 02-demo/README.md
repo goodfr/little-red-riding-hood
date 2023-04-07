@@ -40,7 +40,7 @@ et d'ajouter de l'observabilité sur les trafics réseaux.
 [Step Linkerd](00-preconfig/06-linkerd)
 
 ## Trivy
-![Trivy](images/Trivy_logo.png)
+![Trivy](images/trivy_logo.png)
 
 Trivy est un scanner de vulnérabilités open-source spécialement conçu pour les environnements de conteneurisation
 tels que Kubernetes. Il peut être utilisé pour analyser les images de conteneurs avant leur déploiement sur un
