@@ -75,6 +75,39 @@ kube-node-lease   Active   29h
 
 ## Ouvrons le livre
 
+Nous allons maintenant instancer nos goldies, dans une version rouge et dans une version verte.
+
+Pour se faire, ouvrons le containeur d'outillage avec le bon point de montage:
+```bash
+docker run --rm -v $KUBECONFIG:/home/tooling/kubeconfig.yaml -v $REPO_ROOT_DIR/labs/01-red-riding-hood-v1/:/red-riding-hood-v1 -it zebeurton/lab-devoxx/tooling
+```
+
+Créons les namespaces :
+```bash
+kubectl create ns red
+kubectl create ns green
+```
+
+Changer le manifest en fonction de votre nom de cluster pour l'ingress, les lignes 229 et 233. Par exemple, si je suis sur le cluster `toto2`, je remplace `vcluster-test-red.aws.sphinxgaia.jeromemasson.fr` par `vcluster-toto2-red.aws.sphinxgaia.jeromemasson.fr`.
+```bash
+vim /red-riding-hood-v1/static/manifest-red.yaml
+```
+
+Nous appliquons le manifest modifié :
+```bash
+kubectl apply -f /red-riding-hood-v1/static/manifest-red.yaml -n red
+```
+
+Changer le manifest en fonction de votre nom de cluster pour l'ingress, les lignes 227 et 231. Par exemple, si je suis sur le cluster `toto2`, je remplace `vcluster-test-green.aws.sphinxgaia.jeromemasson.fr` par `vcluster-toto2-green.aws.sphinxgaia.jeromemasson.fr`.
+```bash
+vim /red-riding-hood-v1/static/manifest-green.yaml
+```
+
+Nous appliquons le manifest modifié :
+```bash
+kubectl apply -f /red-riding-hood-v1/static/manifest-green.yaml -n green
+```
+
 Pour vous lancer dans l'aventure, vous pouvez vous rendre sur (labs)[/labs]
 
 ## Troubleshooting
