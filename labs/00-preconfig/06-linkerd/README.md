@@ -1,18 +1,38 @@
 ![Linkerd](../../images/linkerd_logo.png)
 
+
+Déplacer vous dans le dossier du lab
+```bash
+cd /apps/06-linkerd
+```
+
 ## Installation du projet exemple dans le namespace dédié
 
 Créer votre namespace de travail
 
 ```bash
-❯ export NAMESPACE=<mon namespace à changer>
-❯ kubectl create ns $NAMESPACE
-namespace/<mon namespace à changer> created
-❯ kubectl config set-context --current --namespace=$NAMESPACE
-
+export NAMESPACE=monnamespaceamoi
+kubectl create ns $NAMESPACE
+kubectl config set-context --current --namespace=$NAMESPACE
 ```
 
-Déployer ensuite le manifeste permettant de créer les ressources du projet à savoir:
+Vérifier si le cluster est prét pour utilser linkerd:
+```bash
+linkerd check --pre
+```
+
+Installons les CRD ainsi que linkerd sur le cluster
+```bash
+linkerd install --crds | kubectl apply -f -
+linkerd install | kubectl apply -f -
+```
+
+Vérifier Linkerd est correctement installé et configuré:
+```bash
+linkerd check 
+```
+
+Nous allons déployer ensuite le manifeste permettant de créer les ressources du projet à savoir:
 
 - 2 services:
   - goldie-body: exposé uniquement en interne sur le port 9007.
@@ -28,13 +48,7 @@ Déployer ensuite le manifeste permettant de créer les ressources du projet à 
   - little-red-riding-hood-goldie-main
 
 ```bash
-❯ kubectl apply -f manifest-red.yaml -n $NAMESPACE
-serviceaccount/red-little-red-riding-hood-goldie-body created
-serviceaccount/red-little-red-riding-hood-goldie-main created
-service/goldie-body created
-service/red-little-red-riding-hood-goldie-main created
-deployment.apps/little-red-riding-hood-goldie-body created
-deployment.apps/little-red-riding-hood-goldie-main created
+kubectl apply -f manifest-red.yaml -n $NAMESPACE
 ```
 
 Vérifier que les pods s’execute sans aucun problème:
