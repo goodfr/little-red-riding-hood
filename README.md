@@ -51,6 +51,28 @@ Sur amd64
 docker pull zebeurton/lab-devoxx/tooling:amd
 ```
 
+Pour lancer le container d'outil, vous pouvez la commande suivante:
+
+```bash
+export REPO_ROOT_DIR=<chemin vers le clone du projet>
+export KUBECONFIG=<chemin vers le fichier du config du cluster kubernetes>
+docker run --rm -v $KUBECONFIG:/home/tooling/kubeconfig.yaml -v $REPO_ROOT_DIR/labs/00-preconfig/:/apps -it zebeurton/lab-devoxx/tooling
+```
+
+Vérifier que vous avez bien accés à votre cluster Kubernetes :
+```bash
+kubectl get namespaces
+```
+
+Vous devriez obtenir ça:
+```
+NAME              STATUS   AGE
+default           Active   29h
+kube-system       Active   29h
+kube-public       Active   29h
+kube-node-lease   Active   29h
+```
+
 ## Ouvrons le livre
 
 Pour vous lancer dans l'aventure, vous pouvez vous rendre sur (labs)[/labs]
