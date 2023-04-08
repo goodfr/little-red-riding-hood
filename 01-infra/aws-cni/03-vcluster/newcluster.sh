@@ -46,3 +46,20 @@ sleep 10
 vcluster connect $1 -n vcluster-$1 --update-current=false --server=https://vcluster-$1.aws.sphinxgaia.jeromemasson.fr
 
 mv kubeconfig.yaml vcluster-$1-kubeconfig.yaml
+
+export VAULT_ADDR="http://vault.aws.sphinxgaia.jeromemasson.fr"
+
+cat <<EOF > vcluster-$1-data.json
+{ "data": {
+"kubeconfig": "$(base64 < vcluster-$1-kubeconfig.yaml | tr -d '\n' )"   
+}
+EOF
+
+curl -X PUT -H "X-Vault-Request: true" -H "X-Vault-Token: $(vault print token)" -d '@data.json' http://vault.aws.sphinxgaia.jeromemasson.fr/v1/vclusters/data/vcluster-$1
+
+cat <<EOF > vcluster-$1-policy.hcl
+path "vclusters/data/vcluster-$1" {  capabilities = ["read"] }
+EOF
+# command to write policy
+vault policy write vcluster-$1 vcluster-$1-policy.hcl
+vault token create -format=json -policy="vcluster-$1"

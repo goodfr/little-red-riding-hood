@@ -4,3 +4,6 @@
 *kubeconfig*
 *-kubeconfig.yaml
 *vcluster-*.yaml
+*vcluster-*-data.json
+*vcluster-*-policy.hcl
+*key-vault.txt

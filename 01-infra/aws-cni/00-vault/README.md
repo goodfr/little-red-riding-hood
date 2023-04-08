@@ -5,17 +5,22 @@ helm repo add hashicorp https://helm.releases.hashicorp.com
 helm search repo hashicorp/vault
 helm repo update
 
-aws-vault exec custom -- kubectl create namespace vault
-aws-vault exec custom -- kubectl create secret -n vault generic eks-creds \
-    --from-literal=AWS_ACCESS_KEY_ID="$(cat ~/.vault-usr-key)" \
-    --from-literal=AWS_SECRET_ACCESS_KEY="$(cat ~/.vault-usr-secret)"
+kubectl create namespace vault
 
+helm upgrade --install vault hashicorp/vault -n vault -f override.yaml
 
-aws-vault exec custom -- helm upgrade --install vault hashicorp/vault -n vault -f override.yaml
+export VAULT_ADDR=http://vault.aws.sphinxgaia.jeromemasson.fr
 
+vault operator init -key-shares=1 -key-threshold=1 > key.txt
 
-export VAULT_TOKEN=$(cat ~/.vault-root_token)
-export VAULT_ADDR=http://a01913637ccca40029ac76ab626f8f7d-980977184.eu-west-1.elb.amazonaws.com:8200
+sleep 2
+
+vault operator unseal $(grep 'Key 1:' key.txt | awk '{print $NF}')
+
+sleep 2
+
+vault login $(grep 'Initial Root Token:' key.txt | awk '{print $NF}')
+
 
 vault secrets enable -path=test4 kv-v2 
 vault kv put test4/test titi=tata
@@ -52,11 +57,11 @@ vault secrets enable -path=test2 kv-v2
 vault kv put test2/test titi=tata
 vault kv get test2/test 
 
-aws-vault exec custom -- kubectl apply -f tests/test.yaml
+kubectl apply -f tests/test.yaml
 
 ## Add TLS Termination
 
 > Missing some SANs
-aws-vault exec custom -- ./gen-cert.sh 
+./gen-cert.sh 
 
 hvs.ZZDsiONWZouNjiz0JDosoBmY
