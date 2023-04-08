@@ -1,15 +1,20 @@
 # Hands-on : Little Red Riding Hood - Devoxx France 2023 édition
 
-## Intro
+## Intro 
 
 Dans ce hands on, nous vous proposons de déployer notre application du petit chaperon rouge sur le cluster mis à votre
 disposition. Dans un premier temps, vous devez déployer l'application [red riding hood v1](01-red-riding-hood-v1) puis
 ajouter différentes couches de sécurité sur votre cluster pour rendre notre application plus sûre. L'application
-[red riding hood version zero trust](02-red-riding-hood-zero-trust) pourra être la seule à être déployée sur votr
+[red riding hood version zero trust](02-red-riding-hood-zero-trust) pourra être la seule à être déployée sur votre
 cluster.
 
 Pour obtenir une version dite "zero trust" de votre cluster, l'ordre des déploiements des différents outils peut ne pas
 être respecté. Seul l'étape boundary doit être faite en dernier.
+
+## Régles du jeu
+TODO :Explicite les applis, red, ret-zero-trust puis green
+
+
 
 ## Kyverno
 ![Kyverno](images/kyverno_logo.png)

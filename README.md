@@ -8,42 +8,56 @@ Et si notre petite application se décidait enfin à pratiquer le Zero Trust qua
 
 Nous aborderons les risques encourues lors d'un déploiement d'une application Kubernetes et d'un environnement non sécurisé.
 
-Plan:
+## Sommaire
 
-Accès au cluster avec Boudary
+Au programme, nous allons:
+
+Accèder au cluster avec Boudary
 - authentification
 - droits & rôles
-Déploiement de l'application
+Déployer l'application 
 - vérification déploiement avec Kyverno
 - vérification de l'image in-cluster avec Trivy
 - Gestion des secrets avec Vault
 
-## Setup infra
 
-[ ] [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
+Pour réaliser ces différentes opération, nous allons vous founir :
+* Un nom de cluster kubernetes qui vous sera util pour obtenir le nom de domaine
+* Un container Docker contenant tous les outils 
+* Un context Kubernetes sur un cluster isolé
+* TODO:
+** Une Url vers un Vault pour récupérer le context Kube de votre cluster Kubernetes
+** UN token Vault
 
-[ ] Create your cluster
+## Préambule pour jouer les différents labs
 
+### Obtenir les outils
 
-### Create CIVO cluster
+Ce hands on Zero trust utilise beaucoup d'outils (Trivy, Linkerd, Vault, Terraform, Kyberno, ...).
+Afin de ne pas emcombrer vos postes, nous vous proposons un container d'outillage qui contient l'ensemble des outils.
 
+#### Le container de tooling
+
+Sur mac/Arm :
 ```bash
-export CIVO_TOKEN=$(cat ~/.civo_token)
-
-
-
+docker pull zebeurton/lab-devoxx/tooling
 ```
 
-### Create AWS cluster
+TODO : Donner la commande Vault pour récupérer le context Kube
 
+Sur amd64
 
-### Play sequences
+```bash
+docker pull zebeurton/lab-devoxx/tooling:amd
+```
 
-asciinema play 01-infra-aws --speed 4
+## Ouvrons le livre
 
-asciinema play 00-preconfig-kyverno --speed 4
-asciinema play 00-preconfig-trivy --speed 2
-asciinema play 00-preconfig-vault --speed 2
-asciinema play 00-preconfig-boundary --speed 2
-asciinema play 01-demo-apps 
-asciinema play 02-demo-apps
+Pour vous lancer dans l'aventure, vous pouvez vous rendre sur (labs)[/labs]
+
+## Troubleshooting
+
+Si vous rencontrez des difficultés, vous pourriez trouver une solution
+
+TODO A compléter
+
