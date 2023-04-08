@@ -17,7 +17,6 @@ Déplacer vous dans le dossier du lab
 cd /apps/01-kyverno
 ```
 
-
 Vérifier que vous avez bien accés à votre cluster Kubernetes :
 ```bash
 kubectl get namespaces
@@ -44,7 +43,7 @@ Une fois le repo connu de helm, nous pouvons installer la charte avec nos valeur
 ```bash
 kubectl create ns kyverno
 
-helm upgrade --install kyverno kyverno/kyverno -n kyverno  -f overrides.yaml --version v2.5.5
+helm upgrade --install kyverno kyverno/kyverno -n kyverno -f overrides.yaml --version v2.5.5
 ```
 ## Ajout de politique sur le cluster
 

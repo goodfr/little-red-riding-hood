@@ -6,13 +6,29 @@ docker de tooling que nous vous avons fourni.
 
 ```bash
 export REPO_ROOT_DIR=<chemin vers le clone du projet>
-docker run --rm -v $KUBECONFIG:/apps/kubeconfig.yaml -v $REPO_ROOT_DIR/02-demo/00-preconfig/01-kyverno:/apps/kyverno -it zebeurton/lab-devoxx/tooling bash
+export KUBECONFIG=<chemin vers le fichier du config du cluster kubernetes>
+docker run --rm -v $KUBECONFIG:/home/tooling/kubeconfig.yaml -v $REPO_ROOT_DIR/labs/00-preconfig/:/apps -it zebeurton/lab-devoxx/tooling
 ```
 
-Une fois dans le container, vous pouvez positionner la variable KUBECONFIG
+Déplacer vous dans le dossier du lab
 ```bash
-export KUBECONFIG=/app/kubeconfig.yaml
+cd /apps/02-trivy-scanner
 ```
+
+Vérifier que vous avez bien accés à votre cluster Kubernetes :
+```bash
+kubectl get namespaces
+```
+
+Vous devriez obtenir ça:
+```
+NAME              STATUS   AGE
+default           Active   29h
+kube-system       Active   29h
+kube-public       Active   29h
+kube-node-lease   Active   29h
+```
+
 
 Nous utilisons la charte helm officielle pour installer et configurer kyverno dans notre cluster.
 
