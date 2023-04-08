@@ -108,7 +108,7 @@ Nous appliquons le manifest modifié :
 kubectl apply -f /red-riding-hood-v1/static/manifest-green.yaml -n green
 ```
 
-Pour vous lancer dans l'aventure, vous pouvez vous rendre sur (labs)[/labs]
+Pour vous lancer dans l'aventure, vous pouvez vous rendre sur [labs](/labs)
 
 ## Troubleshooting
 
