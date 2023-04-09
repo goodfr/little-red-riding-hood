@@ -1,12 +1,21 @@
 ![Linkerd](../../images/linkerd_logo.png)
 
+## Installation
+
+Pour faciliter l'installation de kyverno, nous utiliserons l'image
+docker de tooling que nous vous avons fourni.
+
+
+```bash
+export REPO_ROOT_DIR=<chemin vers le clone du projet>
+export KUBECONFIG=<chemin vers le fichier du config du cluster kubernetes>
+docker run --rm -v $KUBECONFIG:/home/tooling/kubeconfig.yaml -v $REPO_ROOT_DIR/labs/00-preconfig/:/apps -it -p 50750:50750 zebeurton/lab-devoxx/tooling
+```
 
 Déplacer vous dans le dossier du lab
 ```bash
 cd /apps/06-linkerd
 ```
-
-## Installation du projet exemple dans le namespace dédié
 
 Créer votre namespace de travail
 
@@ -121,7 +130,7 @@ L’extension dashboard a été installé sur le cluster k8s.
 Vous pouvez y accéder via la commande suivante:
 
 ```bash
-❯ linkerd viz dashboard
+❯ linkerd viz dashboard --address 0.0.0.0
 Linkerd dashboard available at:
 http://localhost:50750
 Grafana dashboard available at:
