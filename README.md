@@ -124,3 +124,8 @@ Si vous rencontrez des difficultés, vous pourriez trouver une solution
 
 TODO A compléter
 
+ingress 404 not found
+
+get events: => syncer failed
+
+Resolv: Destroy ingress and apply good configs

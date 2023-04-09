@@ -2,14 +2,14 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: green
+  name: green-zero-trust
 ---
 # Source: little-red-riding-hood-goldie/templates/body-server_sa.yaml
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: ma-little-red-riding-hood-goldie-body
-  namespace: green
+  namespace: green-zero-trust
   labels:
     helm.sh/chart: little-red-riding-hood-goldie-0.1.0
     app.kubernetes.io/version: "0.0.1"
@@ -22,7 +22,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: ma-little-red-riding-hood-goldie-main
-  namespace: green
+  namespace: green-zero-trust
   labels:
     helm.sh/chart: little-red-riding-hood-goldie-0.1.0
     app.kubernetes.io/version: "0.0.1"
@@ -36,7 +36,7 @@ kind: Service
 metadata:
   # connection between main and body / must be static for the moment
   name: goldie-body
-  namespace: green
+  namespace: green-zero-trust
   labels:
     kubernetes.io/instance: body-server
     helm.sh/chart: little-red-riding-hood-goldie-0.1.0
@@ -61,7 +61,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: ma-little-red-riding-hood-goldie-main
-  namespace: green
+  namespace: green-zero-trust
   labels:
     kubernetes.io/instance: main-server
     helm.sh/chart: little-red-riding-hood-goldie-0.1.0
@@ -85,7 +85,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: little-red-riding-hood-goldie-body
-  namespace: green
+  namespace: green-zero-trust
   labels:
     app.kubernetes.io/component: body-server
     bobinette: pull
@@ -120,7 +120,7 @@ spec:
         - 'sleep 10'
       containers:
       - name: little-red-riding-hood-goldie-body
-        image:  "ghcr.io/sphinxgaia/little-red-riding-hood-goldie-body:basic"
+        image:  "ghcr.io/sphinxgaia/little-red-riding-hood-goldie-body:green"
         imagePullPolicy: Always
         resources: {}
         ports:
@@ -131,7 +131,7 @@ spec:
           - name: PORT
             value: "9000"
           - name: "VERSION"
-            value: "basic"
+            value: "green"
         livenessProbe:
           httpGet:
             path: /metrics
@@ -155,7 +155,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: little-red-riding-hood-goldie-main
-  namespace: green
+  namespace: green-zero-trust
   labels:
     app.kubernetes.io/component: main-server
     bobinette: pull
@@ -218,17 +218,17 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: little-red-riding-hood-goldie
-  namespace: green
+  namespace: green-zero-trust
   labels:
     helm.sh/chart: little-red-riding-hood-goldie-0.1.0
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: vcluster-test-green.aws.sphinxgaia.jeromemasson.fr # give your domain name here
+    external-dns.alpha.kubernetes.io/hostname: vcluster-user1-green-zero-trust.aws.sphinxgaia.jeromemasson.fr # give your domain name here
 spec:
   ingressClassName: nginx 
   rules:
-    - host: "vcluster-test-green.aws.sphinxgaia.jeromemasson.fr"
+    - host: "vcluster-user1-green-zero-trust.aws.sphinxgaia.jeromemasson.fr"
       http:
         paths:
           - path: /
