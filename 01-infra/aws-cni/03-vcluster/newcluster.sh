@@ -62,4 +62,4 @@ path "vclusters/data/vcluster-$1" {  capabilities = ["read"] }
 EOF
 # command to write policy
 vault policy write vcluster-$1 vcluster-$1-policy.hcl
-vault token create -format=json -policy="vcluster-$1"
+vault token create -format=json -policy="vcluster-$1" | jq -r ".auth.client_token" > vcluster-$1-vaulttoken

@@ -7,3 +7,4 @@
 *vcluster-*-data.json
 *vcluster-*-policy.hcl
 *key-vault.txt
+*vcluster-*-vaulttoken
