@@ -12,22 +12,22 @@ Nous aborderons les risques encourues lors d'un déploiement d'une application K
 
 Au programme, nous allons:
 
-Accèder au cluster avec Boudary
-- authentification
-- droits & rôles
+
 Déployer l'application 
 - vérification déploiement avec Kyverno
 - vérification de l'image in-cluster avec Trivy
+- Sécuriser les communications avec un service Mesh: Linkerd
 - Gestion des secrets avec Vault
-
+Accèder au cluster avec Boudary
+- authentification
+- droits & rôles
 
 Pour réaliser ces différentes opération, nous allons vous founir :
-* Un nom de cluster kubernetes qui vous sera util pour obtenir le nom de domaine
+* Un nom de cluster kubernetes qui vous sera utile pour obtenir le nom de domaine
 * Un container Docker contenant tous les outils 
 * Un context Kubernetes sur un cluster isolé
-* TODO:
-** Une Url vers un Vault pour récupérer le context Kube de votre cluster Kubernetes
-** UN token Vault
+* Une Url vers un Vault pour récupérer le context Kube de votre cluster Kubernetes
+* Un token Vault
 
 ## Préambule pour jouer les différents labs
 
@@ -43,7 +43,15 @@ Sur mac/Arm :
 docker pull zebeurton/lab-devoxx/tooling
 ```
 
-TODO : Donner la commande Vault pour récupérer le context Kube
+Commande Vault pour récupérer le context Kube, créer un fichier `montoken-vault.txt` qui contiendra votre token vault
+
+```bash
+vi montoken-vault.txt
+
+curl -H "X-Vault-Request: true" -H "X-Vault-Token: $(cat montoken-vault.txt)" http://vault.aws.sphinxgaia.jeromemasson.fr/v1/auth/token/lookup-self
+
+curl -H "X-Vault-Request: true" -H "X-Vault-Token: $(cat montoken-vault.txt)" http://vault.aws.sphinxgaia.jeromemasson.fr/v1/vclusters/data/<moncluster-name>
+```
 
 Sur amd64
 
