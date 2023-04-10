@@ -3,8 +3,7 @@
 ## Installation et configuration de linkerd
 
 Pour faciliter l'installation de linkerd, nous utiliserons l'image
-docker de tooling que nous vous avons fourni.
-
+docker de tooling que nous vous avons fournie.
 
 ```bash
 export REPO_ROOT_DIR=<chemin vers le clone du projet>
