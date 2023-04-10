@@ -133,65 +133,35 @@ Toutes les métriques associées à vos déploiements et pods sont disponibles e
 
 Sélectionner le déploiement `little-red-riding-hood-goldie-body`
 
-Puis dans un autre terminal, générer du trafic sur l'ingress
+Puis dans un autre terminal, générer du trafic sur l'ingress.
+---
+**Note**: Changer l'url de votre ingress tel que vous l'avez modifié au préalable.
+Par exemple, si je suis sur le cluster `toto2`, je remplace `vcluster-test-green.aws.sphinxgaia.jeromemasson.fr` par `vcluster-toto2-green.aws.sphinxgaia.jeromemasson.fr`.
+---
 
 ```bash
-while sleep 5; do curl http://vcluster-test3-red.aws.sphinxgaia.jeromemasson.fr; done
+while [ true ]; do curl -sS http://vcluster-test-red.aws.sphinxgaia.jeromemasson.fr > /dev/null ; done;
 ```
+
+En générant du trafic sur notre ingress, le trafic sur notre déploiement augmente.
+Les path les plus sollicités sont alors affichés.
 
 ## mTLS
 
-Un des points forts d’un service mesh est la sécurisation des communications via du TLS mutuel sans le gérer dans nos déploiement.
+Un des points forts d’un service mesh est la sécurisation des communications via du TLS mutuel
+sans devoir le gérer dans nos déploiements.
+
+Vérifions si le trafic entre nos pods est sécurisé.
 
 ```bash
-❯ linkerd viz top deployment/little-red-riding-hood-goldie-body --namespace $NAMESPACE
-req id=3:0 proxy=in  src=10.0.3.94:65513 dst=10.0.3.26:9000 tls=no_tls_from_remote :method=GET :authority=a2716861231d74a4e93dcc828d34d01a-531477736.eu-west-1.elb.amazonaws.com :path=/
-rsp id=3:0 proxy=in  src=10.0.3.94:65513 dst=10.0.3.26:9000 tls=no_tls_from_remote :status=200 latency=1000µs
-end id=3:0 proxy=in  src=10.0.3.94:65513 dst=10.0.3.26:9000 tls=no_tls_from_remote duration=30µs response-length=564B
-req id=3:1 proxy=in  src=10.0.3.94:65513 dst=10.0.3.26:9000 tls=no_tls_from_remote :method=GET :authority=a2716861231d74a4e93dcc828d34d01a-531477736.eu-west-1.elb.amazonaws.com :path=/parts/body/body.svg
-req id=3:2 proxy=out src=10.0.3.26:46142 dst=10.0.2.55:9000 tls=true :method=GET :authority=goldie-body:9007 :path=/images/body.svg
-req id=3:0 proxy=in  src=10.0.3.26:52356 dst=10.0.2.55:9000 tls=true :method=GET :authority=goldie-body:9007 :path=/images/body.svg
-rsp id=3:0 proxy=in  src=10.0.3.26:52356 dst=10.0.2.55:9000 tls=true :status=200 latency=1742µs
-end id=3:0 proxy=in  src=10.0.3.26:52356 dst=10.0.2.55:9000 tls=true duration=163µs response-length=15492B
-rsp id=3:2 proxy=out src=10.0.3.26:46142 dst=10.0.2.55:9000 tls=true :status=200 latency=2740µs
-end id=3:2 proxy=out src=10.0.3.26:46142 dst=10.0.2.55:9000 tls=true duration=32µs response-length=15492B
-rsp id=3:1 proxy=in  src=10.0.3.94:65513 dst=10.0.3.26:9000 tls=no_tls_from_remote :status=200 latency=3867µs
-end id=3:1 proxy=in  src=10.0.3.94:65513 dst=10.0.3.26:9000 tls=no_tls_from_remote duration=139µs response-length=15492B
-req id=3:3 proxy=in  src=10.0.3.94:65513 dst=10.0.3.26:9000 tls=no_tls_from_remote :method=GET :authority=a2716861231d74a4e93dcc828d34d01a-531477736.eu-west-1.elb.amazonaws.com :path=/
-rsp id=3:3 proxy=in  src=10.0.3.94:65513 dst=10.0.3.26:9000 tls=no_tls_from_remote :status=200 latency=636µs
-end id=3:3 proxy=in  src=10.0.3.94:65513 dst=10.0.3.26:9000 tls=no_tls_from_remote duration=83µs response-length=564B
-req id=3:4 proxy=in  src=10.0.3.94:65513 dst=10.0.3.26:9000 tls=no_tls_from_remote :method=GET :authority=a2716861231d74a4e93dcc828d34d01a-531477736.eu-west-1.elb.amazonaws.com :path=/parts/body/body.svg
-req id=3:1 proxy=in  src=10.0.3.26:52356 dst=10.0.2.55:9000 tls=true :method=GET :authority=goldie-body:9007 :path=/images/body.svg
-req id=3:5 proxy=out src=10.0.3.26:46142 dst=10.0.2.55:9000 tls=true :method=GET :authority=goldie-body:9007 :path=/images/body.svg
-rsp id=3:1 proxy=in  src=10.0.3.26:52356 dst=10.0.2.55:9000 tls=true :status=200 latency=654µs
-rsp id=3:5 proxy=out src=10.0.3.26:46142 dst=10.0.2.55:9000 tls=true :status=200 latency=1615µs
-end id=3:1 proxy=in  src=10.0.3.26:52356 dst=10.0.2.55:9000 tls=true duration=412µs response-length=15492B
-end id=3:5 proxy=out src=10.0.3.26:46142 dst=10.0.2.55:9000 tls=true duration=335µs response-length=15492B
-rsp id=3:4 proxy=in  src=10.0.3.94:65513 dst=10.0.3.26:9000 tls=no_tls_from_remote :status=200 latency=2774µs
-end id=3:4 proxy=in  src=10.0.3.94:65513 dst=10.0.3.26:9000 tls=no_tls_from_remote duration=244µs response-length=15492B
-req id=3:6 proxy=in  src=10.0.3.94:65513 dst=10.0.3.26:9000 tls=no_tls_from_remote :method=GET :authority=a2716861231d74a4e93dcc828d34d01a-531477736.eu-west-1.elb.amazonaws.com :path=/
-rsp id=3:6 proxy=in  src=10.0.3.94:65513 dst=10.0.3.26:9000 tls=no_tls_from_remote :status=200 latency=665µs
-end id=3:6 proxy=in  src=10.0.3.94:65513 dst=10.0.3.26:9000 tls=no_tls_from_remote duration=65µs response-length=564B
-req id=3:7 proxy=in  src=10.0.3.94:65513 dst=10.0.3.26:9000 tls=no_tls_from_remote :method=GET :authority=a2716861231d74a4e93dcc828d34d01a-531477736.eu-west-1.elb.amazonaws.com :path=/parts/body/body.svg
-req id=3:8 proxy=out src=10.0.3.26:46142 dst=10.0.2.55:9000 tls=true :method=GET :authority=goldie-body:9007 :path=/images/body.svg
-req id=3:2 proxy=in  src=10.0.3.26:52356 dst=10.0.2.55:9000 tls=true :method=GET :authority=goldie-body:9007 :path=/images/body.svg
-rsp id=3:2 proxy=in  src=10.0.3.26:52356 dst=10.0.2.55:9000 tls=true :status=200 latency=3809µs
-end id=3:2 proxy=in  src=10.0.3.26:52356 dst=10.0.2.55:9000 tls=true duration=292µs response-length=15492B
-rsp id=3:8 proxy=out src=10.0.3.26:46142 dst=10.0.2.55:9000 tls=true :status=200 latency=4808µs
-end id=3:8 proxy=out src=10.0.3.26:46142 dst=10.0.2.55:9000 tls=true duration=283µs response-length=15492B
-rsp id=3:7 proxy=in  src=10.0.3.94:65513 dst=10.0.3.26:9000 tls=no_tls_from_remote :status=200 latency=5975µs
-end id=3:7 proxy=in  src=10.0.3.94:65513 dst=10.0.3.26:9000 tls=no_tls_from_remote duration=122µs response-length=15492B
+ linkerd viz -n linkerd edges deployment -namespace $NAMESPACE
 ```
-
-Générer du trafic en se connectant sur le load balancer associé et vérifier que certaines routes sont bien protégées en TLS.
-
-Pourquoi certaines routes ne sont-elles pas en TLS ?
 
 Pour de plus amples détails : [https://linkerd.io/2.12/tasks/validating-your-traffic/](https://linkerd.io/2.12/tasks/validating-your-traffic/)
 
 ## Restreindre les accès à nos services
 
-Nous pouvons sécuriser les accès à nos services. Dans notre exemple, nous voulons protéger le service goldie-body qui ne doit être accessible que par notre service prinicpal.
+Nous pouvons sécuriser les accès à nos services. Dans notre exemple, nous voulons protéger le service goldie-body  pour qu'il ne soit accessible que par notre service prinicpal.
 
 ### Création d’une nouvelle ressource : le Server
 
@@ -200,7 +170,7 @@ Le server est une ressource spécifique à Linkerd qui décrit les ports spécif
 Appliquer la définition de notre server goldie-body :
 
 ```bash
-❯ kubectl apply -n $NAMESPACE -f - <<EOF
+kubectl apply -n $NAMESPACE -f - <<EOF
 ---
 apiVersion: policy.linkerd.io/v1beta1
 kind: Server
@@ -217,21 +187,25 @@ spec:
   proxyProtocol: HTTP/1
 EOF
 ```
-
-Générer du trafic et visualiser la page de notre goldie. Son image ne s’affiche plus vu que nous n’avons pas autorisé explicitement le flux.
+Vérifier que le server a bien été créé
 
 ```bash
-❯ linkerd viz authz -n $NAMESPACE deploy/little-red-riding-hood-goldie-body
-ROUTE    SERVER                       AUTHORIZATION                UNAUTHORIZED  SUCCESS     RPS  LATENCY_P50  LATENCY_P95  LATENCY_P99
-default  default:all-unauthenticated  default/all-unauthenticated        0.0rps  100.00%  0.1rps          1ms          1ms          1ms
-probe    default:all-unauthenticated  default/probe                      0.0rps  100.00%  0.2rps          1ms          1ms          1ms
-default  goldie-body-http                                                0.2rps    0.00%  0.0rps          0ms          0ms          0ms
-probe    goldie-body-http             default/probe                      0.0rps  100.00%  0.2rps          1ms          1ms          1ms
+kubectl get server -n $NAMESPACE
+```
+
+Accéder à l'aide de votre navigateur à l'url de votre ingress. L'image du goldie ne doit plus s'afficher.
+En effet, nous n'avons pas autorisé aucun trafic vers notre déploiement little-red-riding-hood-goldie-body.
+
+Vérifier qu'aucun trafic entrant n'est autorisé
+
+```bash
+linkerd viz authz -n $NAMESPACE deploy/little-red-riding-hood-goldie-body
 ```
 
 La route goldie-body-http par défaut n’est plus autorisée.
 
-Nous pouvons autoriser l’accès à notre route uniquement pour les déploiements associés à notre service account. Appliquer la définition suivante:
+Autorisons l’accès à notre route uniquement pour les déploiements associés à notre service account.
+Appliquer la définition suivante:
 
 ```bash
 kubectl apply -n $NAMESPACE -f - <<EOF
@@ -254,17 +228,16 @@ spec:
 EOF
 ```
 
-Accédez de nouveau à notre page web, l’image de notre goldie est revenu. Lancer un conteneur supplémentaire qui n’a pas le service account spécifié pour vérifier si la connexion échoue avec un code d’erreur 403
+Accédez de nouveau à notre page web, l’image de notre goldie est revenue.
+Vérifions que le trafic depuis un autre conteneur n'est pas autorisé.
 
 ```bash
-❯ kubectl run debug --rm -it --image=busybox --restart=Never --command -- wget goldie-body.ddh.svc.cluster.local:9007/images/body.svg
-Connecting to goldie-body.ddh.svc.cluster.local:9007 (172.20.193.27:9007)
-wget: server returned error: HTTP/1.1 403 Forbidden
-pod "debug" deleted
-pod default/debug terminated (Error)
+kubectl run debug --rm -it --image=busybox --restart=Never --command -- wget goldie-body.red.svc.cluster.local:9007/images/body.svg
 ```
 
-Pour aller plus loin, nous pouvons aussi refuser toutes les connexions à nos services si aucun server n’est défini. Nous pouvons aussi définir des politiques sur des routes spécifiques pour ajouter automatiquement un timeout, un circuit breaker etc. Pour plus d’infos aller sur la page [https://linkerd.io/2.12/tasks/configuring-per-route-policy/](https://linkerd.io/2.12/tasks/configuring-per-route-policy/)
+Pour aller plus loin, nous pouvons aussi refuser toutes les connexions à nos services si aucun server n’est défini.
+Nous pouvons aussi définir des politiques sur des routes spécifiques pour ajouter automatiquement un timeout, un circuit breaker etc.
+Pour plus d’infos aller sur la page [https://linkerd.io/2.12/tasks/configuring-per-route-policy/](https://linkerd.io/2.12/tasks/configuring-per-route-policy/)
 ## Back
 
 [Next Step](../)
