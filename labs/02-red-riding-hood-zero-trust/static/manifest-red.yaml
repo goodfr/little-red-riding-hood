@@ -2,14 +2,14 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: red
+  name: red-zero-trust
 ---
 # Source: little-red-riding-hood-goldie/templates/body-server_sa.yaml
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: red-little-red-riding-hood-goldie-body
-  namespace: red
+  name: red-goldie-body
+  namespace: red-zero-trust
   labels:
     helm.sh/chart: little-red-riding-hood-goldie-0.1.0
     app.kubernetes.io/version: "0.0.1"
@@ -21,8 +21,8 @@ metadata:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: red-little-red-riding-hood-goldie-main
-  namespace: red
+  name: red-goldie-main
+  namespace: red-zero-trust
   labels:
     helm.sh/chart: little-red-riding-hood-goldie-0.1.0
     app.kubernetes.io/version: "0.0.1"
@@ -36,7 +36,7 @@ kind: Service
 metadata:
   # connection between main and body / must be static for the moment
   name: goldie-body
-  namespace: red
+  namespace: red-zero-trust
   labels:
     kubernetes.io/instance: body-server
     helm.sh/chart: little-red-riding-hood-goldie-0.1.0
@@ -61,7 +61,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: red-little-red-riding-hood-goldie-main
-  namespace: red
+  namespace: red-zero-trust
   labels:
     kubernetes.io/instance: main-server
     helm.sh/chart: little-red-riding-hood-goldie-0.1.0
@@ -85,7 +85,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: little-red-riding-hood-goldie-body
-  namespace: red
+  namespace: red-zero-trust
   labels:
     app.kubernetes.io/component: body-server
     bobinette: pull
@@ -109,7 +109,7 @@ spec:
         app.kubernetes.io/instance: red-body
     spec:
       terminationGracePeriodSeconds: 5
-      serviceAccountName: red-little-red-riding-hood-goldie-body
+      serviceAccountName: red-goldie-body
       securityContext:
         {}
       initContainers:
@@ -156,7 +156,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: little-red-riding-hood-goldie-main
-  namespace: red
+  namespace: red-zero-trust
   labels:
     app.kubernetes.io/component: main-server
     bobinette: pull
@@ -180,7 +180,7 @@ spec:
         app.kubernetes.io/instance: red-main
     spec:
       terminationGracePeriodSeconds: 5
-      serviceAccountName: red-little-red-riding-hood-goldie-main
+      serviceAccountName: red-goldie-main
       securityContext:
         {}
       containers:
@@ -220,17 +220,17 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: little-red-riding-hood-goldie
-  namespace: red
+  namespace: red-zero-trust
   labels:
     helm.sh/chart: little-red-riding-hood-goldie-0.1.0
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: vcluster-test-red.aws.sphinxgaia.jeromemasson.fr # give your domain name here
+    external-dns.alpha.kubernetes.io/hostname: vcluster-test-red-zero-trust.aws.sphinxgaia.jeromemasson.fr # give your domain name here
 spec:
   ingressClassName: nginx 
   rules:
-    - host: "vcluster-test-red.aws.sphinxgaia.jeromemasson.fr"
+    - host: "vcluster-test-red-zero-trust.aws.sphinxgaia.jeromemasson.fr"
       http:
         paths:
           - path: /

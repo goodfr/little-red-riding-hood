@@ -1,9 +1,15 @@
 ---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: green-zero-trust
+---
 # Source: little-red-riding-hood-goldie/templates/body-server_sa.yaml
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: ma-little-red-riding-hood-goldie-body
+  name: wolf-little-red-riding-hood-goldie-body
+  namespace: green-zero-trust
   labels:
     helm.sh/chart: little-red-riding-hood-goldie-0.1.0
     app.kubernetes.io/version: "0.0.1"
@@ -15,7 +21,8 @@ metadata:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: ma-little-red-riding-hood-goldie-main
+  name: wolf-little-red-riding-hood-goldie-main
+  namespace: green-zero-trust
   labels:
     helm.sh/chart: little-red-riding-hood-goldie-0.1.0
     app.kubernetes.io/version: "0.0.1"
@@ -29,6 +36,7 @@ kind: Service
 metadata:
   # connection between main and body / must be static for the moment
   name: goldie-body
+  namespace: green-zero-trust
   labels:
     kubernetes.io/instance: body-server
     helm.sh/chart: little-red-riding-hood-goldie-0.1.0
@@ -53,8 +61,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: ma-little-red-riding-hood-goldie-main
-  annotations:
-        external-dns.alpha.kubernetes.io/hostname: green-trust.aws.sphinxgaia.jeromemasson.fr
+  namespace: green-zero-trust
   labels:
     kubernetes.io/instance: main-server
     helm.sh/chart: little-red-riding-hood-goldie-0.1.0
@@ -63,7 +70,7 @@ metadata:
     app.kubernetes.io/name: little-red-riding-hood-goldie-main
     app.kubernetes.io/instance: ma-main
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
     - port: 80
       targetPort: http
@@ -78,6 +85,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: little-red-riding-hood-goldie-body
+  namespace: green-zero-trust
   labels:
     app.kubernetes.io/component: body-server
     bobinette: pull
@@ -90,19 +98,17 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      bobinette: pull
       app.kubernetes.io/name: little-red-riding-hood-goldie-body
       app.kubernetes.io/instance: ma-body
   template:
     metadata:
       labels:
-        bobinette: pull
         app.kubernetes.io/component: body-server
         app.kubernetes.io/name: little-red-riding-hood-goldie-body
         app.kubernetes.io/instance: ma-body
     spec:
       terminationGracePeriodSeconds: 5
-      serviceAccountName: ma-little-red-riding-hood-goldie-body
+      serviceAccountName: wolf-little-red-riding-hood-goldie-body
       securityContext:
         {}
       initContainers:
@@ -149,6 +155,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: little-red-riding-hood-goldie-main
+  namespace: green-zero-trust
   labels:
     app.kubernetes.io/component: main-server
     bobinette: pull
@@ -161,19 +168,17 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      bobinette: pull
       app.kubernetes.io/name: little-red-riding-hood-goldie-main
       app.kubernetes.io/instance: ma-main
   template:
     metadata:
       labels:
-        bobinette: pull
         app.kubernetes.io/component: main-server
         app.kubernetes.io/name: little-red-riding-hood-goldie-main
         app.kubernetes.io/instance: ma-main
     spec:
       terminationGracePeriodSeconds: 5
-      serviceAccountName: ma-little-red-riding-hood-goldie-main
+      serviceAccountName: wolf-little-red-riding-hood-goldie-main
       securityContext:
         {}
       containers:
@@ -189,7 +194,7 @@ spec:
           - name: PORT
             value: "9000"
           - name: "VERSION"
-            value: "green"
+            value: "red"
         livenessProbe:
           httpGet:
             path:  /
@@ -208,26 +213,28 @@ spec:
                 values:
                 - enabled
 ---
-# # Source: little-red-riding-hood-goldie/templates/main-ingress.yaml
-# apiVersion: networking.k8s.io/v1
-# kind: Ingress
-# metadata:
-#   name: ma-little-red-riding-hood-goldie
-#   labels:
-#     helm.sh/chart: little-red-riding-hood-goldie-0.1.0
-#     app.kubernetes.io/version: "0.0.1"
-#     app.kubernetes.io/managed-by: Helm
-#   annotations:
-#     kubernetes.io/ingress.class: traefik
-# spec:
-#   rules:
-#     - host: "green-trust.sphinxgaia.jeromemasson.fr"
-#       http:
-#         paths:
-#           - path: /
-#             pathType: ImplementationSpecific
-#             backend:
-#               service:
-#                 name: ma-little-red-riding-hood-goldie-main
-#                 port:
-#                   number: 80
+# Source: little-red-riding-hood-goldie/templates/main-ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: little-red-riding-hood-goldie
+  namespace: green-zero-trust
+  labels:
+    helm.sh/chart: little-red-riding-hood-goldie-0.1.0
+    app.kubernetes.io/version: "0.0.1"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: vcluster-user1-green-zero-trust.aws.sphinxgaia.jeromemasson.fr # give your domain name here
+spec:
+  ingressClassName: nginx 
+  rules:
+    - host: "vcluster-user1-green-zero-trust.aws.sphinxgaia.jeromemasson.fr"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ma-little-red-riding-hood-goldie-main
+                port:
+                  number: 80

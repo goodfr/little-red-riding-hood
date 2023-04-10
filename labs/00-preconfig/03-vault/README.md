@@ -8,6 +8,8 @@ Et si mère grand déposée sont digicodes d'entrées dans un vault et que seul 
 > 
 > Trouver les configurations qui empèchent le loup d'obtenir le secret
 
+Le dossier du lab : `03-red-riding-hood-v1-vault`
+
 ## Installation
 
 ```bash
