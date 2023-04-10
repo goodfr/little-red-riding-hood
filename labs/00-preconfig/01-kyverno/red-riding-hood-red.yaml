@@ -7,9 +7,15 @@ metadata:
 spec:
   # The `validationFailureAction` tells Kyverno if the resource being validated should be allowed but reported (`audit`) or blocked (`enforce`).
   validationFailureAction: enforce
+
   # The `rules` is one or more rules which must be true.
   rules:
     - name: require-red-label
+      # exclude:
+      #   any:
+      #   - resources:
+      #       namespaces:
+      #       - myns
       # The `match` statement sets the scope of what will be checked. In this case, it is any `Namespace` resource.
       match:
         all:
