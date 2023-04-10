@@ -1,6 +1,6 @@
 ![Linkerd](../../images/linkerd_logo.png)
 
-## Installation
+## Installation et configuration de linkerd
 
 Pour faciliter l'installation de kyverno, nous utiliserons l'image
 docker de tooling que nous vous avons fourni.
@@ -9,12 +9,7 @@ docker de tooling que nous vous avons fourni.
 ```bash
 export REPO_ROOT_DIR=<chemin vers le clone du projet>
 export KUBECONFIG=<chemin vers le fichier du config du cluster kubernetes>
-docker run --rm -v $KUBECONFIG:/home/tooling/kubeconfig.yaml -v $REPO_ROOT_DIR/labs/00-preconfig/:/apps -it -p 50750:50750 ghcr.io/ddrugeon/devoxx2023-tooling
-```
-
-Déplacer vous dans le dossier du lab
-```bash
-cd /apps/06-linkerd
+docker run --rm -v $KUBECONFIG:/home/tooling/kubeconfig.yaml -v $REPO_ROOT_DIR/labs/:/apps -it -p 50750:50750 ghcr.io/ddrugeon/devoxx2023-tooling
 ```
 
 Créer votre namespace de travail
@@ -22,7 +17,6 @@ Créer votre namespace de travail
 ```bash
 export NAMESPACE=monnamespaceamoi
 kubectl create ns $NAMESPACE
-kubectl config set-context --current --namespace=$NAMESPACE
 ```
 
 Vérifier si le cluster est prét pour utilser linkerd:
@@ -40,6 +34,19 @@ Vérifier Linkerd est correctement installé et configuré:
 ```bash
 linkerd check 
 ```
+Linkerd propose un dashboard permettant d'observer les différentes métriques associées à nos déploiements. Celui-ci
+n'est pas déployé par défaut. Installons-le sur notre cluster.
+
+```bash
+linkerd viz install | kubectl apply -f -
+```
+
+Vérifier le dashboard est correctement installé et configuré:
+```bash
+linkerd check 
+```
+
+## Installation et configuration de nos déploiements
 
 Nous allons déployer ensuite le manifeste permettant de créer les ressources du projet à savoir:
 
@@ -56,102 +63,81 @@ Nous allons déployer ensuite le manifeste permettant de créer les ressources d
   - little-red-riding-hood-goldie-body
   - little-red-riding-hood-goldie-main
 
+Déplacer vous dans le dossier 01-red-riding-hood-v1
+```bash
+cd /apps/01-red-riding-hood-v1/static
+```
+
 ```bash
 kubectl apply -f manifest-red.yaml -n $NAMESPACE
 ```
+---
+**Note**: Les politiques mises en place lors de l'étape [Kyverno](../01-kyverno) peuvent empêcher le déploiement.
+Modifier la configuration de la politique pour autoriser le déploiement sur le namespace que vous avez choisi
+(soit au niveau de la configuration globale de Kyverno soit en modifiant la politique Cluster).
+Une fois configuré, appliquer de nouveau la commande
+```bash
+kubectl apply -f manifest-red.yaml -n $NAMESPACE
+```
+---
 
-Vérifier que les pods s’execute sans aucun problème:
+Puis, vérifier que les déploiements s’executent sans aucun problème:
 
 ```bash
-❯ k -n $NAMESPACE get all
-NAME                                                     READY   STATUS    RESTARTS   AGE
-pod/little-red-riding-hood-goldie-body-9cb957f7-gzz2b    1/1     Running   0          6m31s
-pod/little-red-riding-hood-goldie-main-77795f848-fwtc7   1/1     Running   0          6m31s
-
-NAME                                             TYPE           CLUSTER-IP      EXTERNAL-IP                                                              PORT(S)        AGE
-service/goldie-body                              ClusterIP      172.20.193.27   <none>                                                                   9007/TCP       6m32s
-service/red-little-red-riding-hood-goldie-main   LoadBalancer   172.20.11.28    a2716861231d74a4e93dcc828d34d01a-531477736.eu-west-1.elb.amazonaws.com   80:30860/TCP   6m32s
-
-NAME                                                 READY   UP-TO-DATE   AVAILABLE   AGE
-deployment.apps/little-red-riding-hood-goldie-body   1/1     1            1           6m31s
-deployment.apps/little-red-riding-hood-goldie-main   1/1     1            1           6m31s
-
-NAME                                                           DESIRED   CURRENT   READY   AGE
-replicaset.apps/little-red-riding-hood-goldie-body-9cb957f7    1         1         1       6m31s
-replicaset.apps/little-red-riding-hood-goldie-main-77795f848   1         1         1       6m31s
+❯ k -n $NAMESPACE get deploy
 ```
 
 ## Ajout du maillage via linkerd
 
-Vérifier via linkerd  que les pods existants sur votre namespace n’est pas géré par linkerd
+Vérifier via linkerd que les pods existants sur votre namespace ne sont pas géré par linkerd
 
 ```bash
-❯ kubectl -n $NAMESPACE get po -o jsonpath='{.items[0].spec.containers[*].name}'
-
-little-red-riding-hood-goldie-body%
+kubectl -n $NAMESPACE get po -o jsonpath='{.items[0].spec.containers[*].name}'
 ```
 
-Pour ajouter dynamiquement un conteneur sidecar (linkerd proxy), il suffit d’ajouter l’annotation au niveau de la specification du conteneur dans le déploiement:
-
-[linkerd.io/inject:](http://linkerd.io/inject:) enabled
-
-ou plus simplement utiliser la cl linkerd pour injecter cette annotation sur tous les déploiements de notre ns
+Modifions nos déploiements pour ajouter dynamiquement un conteneur sidecar (linkerd proxy)
 
 ```bash
-❯ kubectl -n $NAMESPACE get deploy -o yaml | linkerd inject - | kubectl apply -n $NAMESPACE -f -
-
-deployment "little-red-riding-hood-goldie-body" injected
-deployment "little-red-riding-hood-goldie-main" injected
-
-the namespace from the provided object "ddh" does not match the namespace "red". You must pass '--namespace=ddh' to perform this operation.
-the namespace from the provided object "ddh" does not match the namespace "red". You must pass '--namespace=ddh' to perform this operation.
+kubectl -n $NAMESPACE get deploy -o yaml | linkerd inject - | kubectl apply -n $NAMESPACE -f -
 ```
 
-puis vérifier de nouveau que le dataplane de linkerd a bien été injecté
+Vérifier de nouveau que le dataplane de linkerd a bien été injecté dans nos déploiements.
 
 ```bash
-❯ kubectl -n $NAMESPACE get po -o jsonpath='{.items[0].spec.containers[*].name}' | grep linkerd-proxy
-linkerd-proxy little-red-riding-hood-goldie-body
+kubectl -n $NAMESPACE get po -o jsonpath='{.items[0].spec.containers[*].name}' | grep linkerd-proxy
 ```
 
-Vérifiez les droits associés à chacune des routes de nos services
+Vérifiez les droits associés à chacune des routes de nos services. Tout le trafic entre nos services est autorisé.
 
 ```bash
-❯ linkerd viz authz -n $NAMESPACE deploy
-ROUTE    SERVER                       AUTHORIZATION                UNAUTHORIZED  SUCCESS     RPS  LATENCY_P50  LATENCY_P95  LATENCY_P99
-default  default:all-unauthenticated  default/all-unauthenticated        0.0rps  100.00%  0.2rps          1ms          1ms          1ms
-probe    default:all-unauthenticated  default/probe                      0.0rps  100.00%  0.8rps          1ms          1ms          1ms
+linkerd viz authz -n $NAMESPACE deploy
 ```
 
 ## Linkerd dashboard
 
-L’extension dashboard a été installé sur le cluster k8s.
-
-Vous pouvez y accéder via la commande suivante:
+Accédons à l'interface web proposée par le dashboard.
 
 ```bash
-❯ linkerd viz dashboard --address 0.0.0.0
-Linkerd dashboard available at:
-http://localhost:50750
-Grafana dashboard available at:
-http://localhost:50750/grafana
-Opening Linkerd dashboard in the default browser
+linkerd viz dashboard --address 0.0.0.0
 ```
 
-Le dashboard alors disponible sur votre navigateur
+Ouvrir alors le dashboard depuis votre navigateur à l'adresse [http://localhost:50750](http://localhost:50750)
 
 ![Dashboard1](./dashboard1.png)
 
-Selectionner votre namespace pour visualiser les différentes statistiques
+Selectionner votre namespace pour visualiser les différentes statistiques de trafic sur nos déploiements.
 
 ![Dashboard2](./dashboard2.png)
 
-toutes les métriques associées à vos déploiements et pods sont disponibles en temps réel. Vous pouvez générer du trafic pour voir les valeurs changer en temps réel.
+Toutes les métriques associées à vos déploiements et pods sont disponibles en temps réel.
 
-Sélectionner le déploiement little-red-riding-hood-goldie-body.
+Sélectionner le déploiement `little-red-riding-hood-goldie-body`
 
-- Quel est le maillage de ce déploiement (qui appelle ce déploiement, et quel service appelle-t-il ?)
-- Quel sont les métriques associées à la route / et quelles routes appelle-t-elle ?
+Puis dans un autre terminal, générer du trafic sur l'ingress
+
+```bash
+while sleep 5; do curl http://vcluster-test3-red.aws.sphinxgaia.jeromemasson.fr; done
+```
 
 ## mTLS
 
