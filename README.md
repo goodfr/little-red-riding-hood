@@ -38,9 +38,8 @@ Afin de ne pas emcombrer vos postes, nous vous proposons un container d'outillag
 
 #### Le container de tooling
 
-Sur mac/Arm :
 ```bash
-docker pull zebeurton/lab-devoxx/tooling
+docker pull ghcr.io/ddrugeon/devoxx2023-tooling
 ```
 
 Commande Vault pour récupérer le context Kube, créer un fichier `montoken-vault.txt` qui contiendra votre token vault
@@ -53,18 +52,12 @@ curl -H "X-Vault-Request: true" -H "X-Vault-Token: $(cat montoken-vault.txt)" ht
 curl -H "X-Vault-Request: true" -H "X-Vault-Token: $(cat montoken-vault.txt)" http://vault.aws.sphinxgaia.jeromemasson.fr/v1/vclusters/data/<moncluster-name>
 ```
 
-Sur amd64
-
-```bash
-docker pull zebeurton/lab-devoxx/tooling:amd
-```
-
 Pour lancer le container d'outil, vous pouvez la commande suivante:
 
 ```bash
 export REPO_ROOT_DIR=<chemin vers le clone du projet>
 export KUBECONFIG=<chemin vers le fichier du config du cluster kubernetes>
-docker run --rm -v $KUBECONFIG:/home/tooling/kubeconfig.yaml -v $REPO_ROOT_DIR/labs/00-preconfig/:/apps -it zebeurton/lab-devoxx/tooling
+docker run --rm -v $KUBECONFIG:/home/tooling/kubeconfig.yaml -v $REPO_ROOT_DIR/labs/00-preconfig/:/apps -it ghcr.io/ddrugeon/devoxx2023-tooling
 ```
 
 Vérifier que vous avez bien accés à votre cluster Kubernetes :
@@ -87,7 +80,7 @@ Nous allons maintenant instancer nos goldies, dans une version rouge et dans une
 
 Pour se faire, ouvrons le containeur d'outillage avec le bon point de montage:
 ```bash
-docker run --rm -v $KUBECONFIG:/home/tooling/kubeconfig.yaml -v $REPO_ROOT_DIR/labs/01-red-riding-hood-v1/:/red-riding-hood-v1 -it zebeurton/lab-devoxx/tooling
+docker run --rm -v $KUBECONFIG:/home/tooling/kubeconfig.yaml -v $REPO_ROOT_DIR/labs/01-red-riding-hood-v1/:/red-riding-hood-v1 -it ghcr.io/ddrugeon/devoxx2023-tooling
 ```
 
 Créons les namespaces :
