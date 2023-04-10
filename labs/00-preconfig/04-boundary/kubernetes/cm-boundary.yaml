@@ -1,0 +1,22 @@
+apiVersion: v1
+data:
+  boundary.hcl: "disable_mlock = true\n\ncontroller {\n\tname = \"kubernetes-controller\"\n\tdescription
+    = \"A controller for a kubernetes demo!\"\n\tdatabase {\n\t\t\turl = \"env://BOUNDARY_PG_URL\"\n\t}\n\tpublic_cluster_addr
+    = \"vcluster-user1-boundary.aws.sphinxgaia.jeromemasson.fr:80\"\n}\n\nworker
+    {\n\tname = \"kubernetes-worker\"\n\tdescription = \"A worker for a kubernetes
+    demo\"\n\tcontrollers = [\"localhost\"]\n\tpublic_addr
+    = \"vcluster-user1-boundary.aws.sphinxgaia.jeromemasson.fr:80\"\n}\n\nlistener
+    \"tcp\" {\n\taddress = \"0.0.0.0\"\n\tpurpose = \"api\"\n\ttls_disable = true\n\tcors_enabled = true\n\tcors_allowed_origins = [\"*\"]\n}\n\nlistener
+    \"tcp\" {\n\taddress = \"0.0.0.0\"\n\tpurpose = \"cluster\"\n\ttls_disable = true\n}\n\nlistener
+    \"tcp\" {\n\taddress = \"0.0.0.0\"\n\tpurpose = \"proxy\"\n\ttls_disable = true\n}\n\nkms
+    \"aead\" {\n\tpurpose = \"root\"\n\taead_type = \"aes-gcm\"\n\tkey = \"sP1fnF5Xz85RrXyELHFeZg9Ad2qt4Z4bgNHVGtD6ung=\"\n\tkey_id
+    = \"global_root\"\n}\n\nkms \"aead\" {\n\tpurpose = \"worker-auth\"\n\taead_type
+    = \"aes-gcm\"\n\tkey = \"8fZBjCUfN0TzjEGLQldGY4+iE9AkOvCfjh7+p0GtRBQ=\"\n\tkey_id
+    = \"global_worker-auth\"\n}\n\nkms \"aead\" {\n\tpurpose = \"recovery\"\n\taead_type
+    = \"aes-gcm\"\n\tkey = \"8fZBjCUfN0TzjEGLQldGY4+iE9AkOvCfjh7+p0GtRBQ=\"\n\tkey_id
+    = \"global_recovery\"\n}\n"
+immutable: false
+kind: ConfigMap
+metadata:
+  name: boundary-config
+  namespace: boundary

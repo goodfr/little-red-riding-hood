@@ -1,10 +1,8 @@
-module "kubernetes" {
-  source = "./kubernetes"
-}
 
 module "boundary" {
   source = "./boundary"
-  addr   = "http://${module.kubernetes.boundary_loadbalancer}:9200"
+  addr   = "http://vcluster-user1-boundary.aws.sphinxgaia.jeromemasson.fr"
+  vault_hostname  = "http://vcluster-user1-vault.aws.sphinxgaia.jeromemasson.fr"
 
 }
 
