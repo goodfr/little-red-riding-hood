@@ -5,7 +5,6 @@
 Pour faciliter l'installation de linkerd, nous utiliserons l'image
 docker de tooling que nous vous avons fournie.
 
-
 ```bash
 export REPO_ROOT_DIR=<chemin vers le clone du projet>
 export KUBECONFIG=<chemin vers le fichier du config du cluster kubernetes>
@@ -154,7 +153,7 @@ sans devoir le gérer dans nos déploiements.
 Vérifions si le trafic entre nos pods est sécurisé.
 
 ```bash
- linkerd viz -n linkerd edges deployment -namespace $NAMESPACE
+ linkerd viz -n $NAMESPACE edges deployment
 ```
 
 Pour de plus amples détails : [https://linkerd.io/2.12/tasks/validating-your-traffic/](https://linkerd.io/2.12/tasks/validating-your-traffic/)
