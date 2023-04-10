@@ -20,6 +20,7 @@ config:
             - vault
             - trivy-system
             - linkerd
+            - linkerd-viz
             - boundary
             - red
             - green
