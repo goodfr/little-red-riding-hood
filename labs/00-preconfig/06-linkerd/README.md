@@ -140,11 +140,11 @@ Opening Linkerd dashboard in the default browser
 
 Le dashboard alors disponible sur votre navigateur
 
-![Dashboard1](Dashboard1.png)
+![Dashboard1](./dashboard1.png)
 
 Selectionner votre namespace pour visualiser les différentes statistiques
 
-![Dashboard2](Dashboard2.png)
+![Dashboard2](./dashboard2.png)
 
 toutes les métriques associées à vos déploiements et pods sont disponibles en temps réel. Vous pouvez générer du trafic pour voir les valeurs changer en temps réel.
 
