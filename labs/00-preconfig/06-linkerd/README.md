@@ -2,8 +2,8 @@
 
 ## Installation et configuration de linkerd
 
-Pour faciliter l'installation de kyverno, nous utiliserons l'image
-docker de tooling que nous vous avons fourni.
+Pour faciliter l'installation de linkerd, nous utiliserons l'image
+docker de tooling que nous vous avons fournie.
 
 
 ```bash
