@@ -2,7 +2,7 @@
 
 ## Installation et configuration de linkerd
 
-Pour faciliter l'installation de kyverno, nous utiliserons l'image
+Pour faciliter l'installation de linkerd, nous utiliserons l'image
 docker de tooling que nous vous avons fourni.
 
 
@@ -154,7 +154,7 @@ sans devoir le gérer dans nos déploiements.
 Vérifions si le trafic entre nos pods est sécurisé.
 
 ```bash
- linkerd viz -n linkerd edges deployment -namespace $NAMESPACE
+ linkerd viz -n $NAMESPACE edges deployment
 ```
 
 Pour de plus amples détails : [https://linkerd.io/2.12/tasks/validating-your-traffic/](https://linkerd.io/2.12/tasks/validating-your-traffic/)
