@@ -34,7 +34,7 @@ spec:
           value: postgres
         - name: POSTGRES_PASSWORD
           value: postgres
-        image: postgres
+        image: public.ecr.aws/docker/library/postgres
         imagePullPolicy: Always
         livenessProbe:
           exec:
