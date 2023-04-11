@@ -52,13 +52,15 @@ export VAULT_ADDR="http://vault.aws.sphinxgaia.jeromemasson.fr"
 cat <<EOF > vcluster-$1-data.json
 { "data": {
 "kubeconfig": "$(base64 < vcluster-$1-kubeconfig.yaml | tr -d '\n' )"   
-}
+}}
 EOF
 
-curl -X PUT -H "X-Vault-Request: true" -H "X-Vault-Token: $(vault print token)" -d '@data.json' http://vault.aws.sphinxgaia.jeromemasson.fr/v1/vclusters/data/vcluster-$1
+echo vcluster-$1-data.json | tr -d "\n" > vcluster-$1-data.json
+
+curl -X PUT -H "X-Vault-Request: true" -H "X-Vault-Token: $(vault print token)" -d '@vcluster-$i-data.json' http://vault.aws.sphinxgaia.jeromemasson.fr/v1/vclusters/data/vcluster-$1
 
 cat <<EOF > vcluster-$1-policy.hcl
-path "vclusters/data/vcluster-$1" {  capabilities = ["read"] }
+path "vclusters/data/vcluster-$1" {  capabilities = ["list","read"] }
 EOF
 # command to write policy
 vault policy write vcluster-$1 vcluster-$1-policy.hcl
