@@ -40,19 +40,6 @@ resource "boundary_credential_library_vault" "red" {
 EOT
 }
 
-resource "boundary_credential_library_vault" "green" {
-  name                = "red"
-  description         = "My second Vault credential library!"
-  credential_store_id = boundary_credential_store_vault.project.id
-  path                = "kubernetes/creds/auto-managed-sa-and-role" # change to Vault backend path
-  http_method         = "POST"
-  http_request_body   = <<EOT
-{
-  "kubernetes_namespace": "red-zero-trust"	
-}
-EOT
-}
-
 resource "boundary_credential_library_vault" "ca" {
   name                = "bar"
   description         = "My second Vault credential library!"
