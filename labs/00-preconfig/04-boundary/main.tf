@@ -10,6 +10,11 @@ output "boundary_auth_method_id" {
   value = module.boundary.boundary_auth_method_password
 }
 
+output "password" {
+  value = module.boundary.password
+  sensitive = true
+}
+
 output "boundary_connect_syntax" {
   value       = <<EOT
 

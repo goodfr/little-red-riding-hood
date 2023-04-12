@@ -31,3 +31,8 @@ resource "boundary_account_password" "admins" {
   login_name     = lower(each.key)
   password       = random_password.adminpassword[each.key].result
 }
+
+output "password" {
+  value = boundary_account_password.admins
+  sensitive = true
+}

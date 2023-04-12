@@ -132,7 +132,7 @@ Congrats! You've just deployed Boundary onto Kubernetes and are able to access o
 # Installation de Boundary pour sécuriser l'accès à votre environnement
 
 
-kubectl apply -f vault-clusterrole.yaml
+kubectl apply -f setup_vault/vault-clusterrole.yaml
 
 kubectl config view --minify --raw --output 'jsonpath={..cluster.certificate-authority-data}' | base64 -d > ca.crt
 
@@ -153,6 +153,9 @@ cd /home/vault
 
 ls
 
+en cas de soucis de connexion
+
+vault login $(grep 'Initial Root Token:' key-vault.txt | awk '{print $NF}')
 vault secrets enable kubernetes
 
 vault secrets enable -path=secret kv-v2
@@ -171,16 +174,13 @@ generated_role_rules='{"rules":[{"apiGroups":[""],"resources":["pods"],"verbs":[
 
 vault write kubernetes/creds/auto-managed-sa-and-role kubernetes_namespace=default
 
-
-vault write auth/kubernetes/roles/auto-managed-sa-and-role allowed_kubernetes_namespaces="*" token_default_ttl="10m" generated_role_rules='{"rules":[{"apiGroups":[""],"resources":["pods"],"verbs":["list"]}]}'
-
-vault write kubernetes/creds/auto-managed-sa-and-role \
-    kubernetes_namespace=default
-
+create a file remote_user_token with service_account_token fields
 
 exit
 
 kubectl cp vault/vault-0:/home/vault/remote_user_token remote_user_token
+
+export KUBE_API_URL=$(kubectl config view -o jsonpath="{.clusters[?(@.name == \"$(kubectl config current-context)\")].cluster.server}")
 
 export REMOTE_USER_TOKEN=$(cat remote_user_token)
 
@@ -190,8 +190,7 @@ export KUBECONFIG=toto
 
 kubectl config view > toto
 
-
-isue
+issue
 kubectl get pod -A --certificate-authority=ca.crt --server=$KUBE_API_URL --token=$REMOTE_USER_TOKEN
 
 ok
@@ -201,7 +200,7 @@ kubectl get pod --certificate-authority=ca.crt --server=$KUBE_API_URL --token=$R
 
 export KUBECONFIG=$OLD_KUBECONFIG
 
-kubectl cp boundary-policy.hcl vault/vault-0:/home/vault
+kubectl cp setup_vault/boundary-policy.hcl vault/vault-0:/home/vault
 
 kubectl exec -n vault vault-0 -it -- sh
 
@@ -219,6 +218,7 @@ vault token create \
 
 copy client_token (1 line) to boundary-token file
 
+exit
 
 kubectl cp vault/vault-0:/home/vault/boundary-token boundary-token
 
@@ -229,3 +229,7 @@ kubectl apply -f kubernetes
 access boundary ui
 
 terraform apply -auto-approve
+
+connect to boundary
+
+terraform output password

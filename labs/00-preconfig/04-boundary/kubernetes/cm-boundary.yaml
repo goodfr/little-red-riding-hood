@@ -1,20 +1,66 @@
 apiVersion: v1
 data:
-  boundary.hcl: "disable_mlock = true\n\ncontroller {\n\tname = \"kubernetes-controller\"\n\tdescription
-    = \"A controller for a kubernetes demo!\"\n\tdatabase {\n\t\t\turl = \"env://BOUNDARY_PG_URL\"\n\t}\n\tpublic_cluster_addr
-    = \"vcluster-user1-boundary.aws.sphinxgaia.jeromemasson.fr:80\"\n}\n\nworker
-    {\n\tname = \"kubernetes-worker\"\n\tdescription = \"A worker for a kubernetes
-    demo\"\n\tcontrollers = [\"localhost\"]\n\tpublic_addr
-    = \"vcluster-user1-boundary.aws.sphinxgaia.jeromemasson.fr:80\"\n}\n\nlistener
-    \"tcp\" {\n\taddress = \"0.0.0.0\"\n\tpurpose = \"api\"\n\ttls_disable = true\n\tcors_enabled = true\n\tcors_allowed_origins = [\"*\"]\n}\n\nlistener
-    \"tcp\" {\n\taddress = \"0.0.0.0\"\n\tpurpose = \"cluster\"\n\ttls_disable = true\n}\n\nlistener
-    \"tcp\" {\n\taddress = \"0.0.0.0\"\n\tpurpose = \"proxy\"\n\ttls_disable = true\n}\n\nkms
-    \"aead\" {\n\tpurpose = \"root\"\n\taead_type = \"aes-gcm\"\n\tkey = \"sP1fnF5Xz85RrXyELHFeZg9Ad2qt4Z4bgNHVGtD6ung=\"\n\tkey_id
-    = \"global_root\"\n}\n\nkms \"aead\" {\n\tpurpose = \"worker-auth\"\n\taead_type
-    = \"aes-gcm\"\n\tkey = \"8fZBjCUfN0TzjEGLQldGY4+iE9AkOvCfjh7+p0GtRBQ=\"\n\tkey_id
-    = \"global_worker-auth\"\n}\n\nkms \"aead\" {\n\tpurpose = \"recovery\"\n\taead_type
-    = \"aes-gcm\"\n\tkey = \"8fZBjCUfN0TzjEGLQldGY4+iE9AkOvCfjh7+p0GtRBQ=\"\n\tkey_id
-    = \"global_recovery\"\n}\n"
+  boundary.hcl: |
+    disable_mlock = true
+
+    controller {
+        name = "kubernetes-controller"
+        description = "A controller for a kubernetes demo!"
+        database {
+                url = "env://BOUNDARY_PG_URL"
+        }
+        public_cluster_addr = "localhost"
+    }
+
+    worker
+        {
+        name = "kubernetes-worker"
+        description = "A worker for a kubernetes demo"
+        initial_upstreams = ["boundary-controller"]
+        public_addr = "vcluster-user1-boundary.aws.sphinxgaia.jeromemasson.fr:80"
+    }
+
+    listener "tcp" {
+        address = "0.0.0.0"
+        purpose = "api"
+        tls_disable = true
+        cors_enabled = true
+        cors_allowed_origins = ["*"]
+    }
+
+    listener "tcp" {
+        address = "0.0.0.0"
+        purpose = "cluster"
+        tls_disable = true
+    }
+
+    listener "tcp" {
+        address = "0.0.0.0"
+        purpose = "proxy"
+        tls_disable = true
+    }
+
+    kms "aead" {
+        purpose = "root"
+        aead_type = "aes-gcm"
+        key = "sP1fnF5Xz85RrXyELHFeZg9Ad2qt4Z4bgNHVGtD6ung="
+        key_id = "global_root"
+    }
+
+    kms "aead" {
+        purpose = "worker-auth"
+        aead_type = "aes-gcm"
+        key = "8fZBjCUfN0TzjEGLQldGY4+iE9AkOvCfjh7+p0GtRBQ="
+        key_id = "global_worker-auth"
+    }
+
+    kms "aead" {
+        purpose = "recovery"
+        aead_type = "aes-gcm"
+        key = "8fZBjCUfN0TzjEGLQldGY4+iE9AkOvCfjh7+p0GtRBQ="
+        key_id = "global_recovery"
+    }
+    
 immutable: false
 kind: ConfigMap
 metadata:
