@@ -55,9 +55,11 @@ cat <<EOF > vcluster-$1-data.json
 }}
 EOF
 
-echo vcluster-$1-data.json | tr -d "\n" > vcluster-$1-data.json
+cat vcluster-$1-data.json | tr -d "\n" > vcluster-$1-data-temp.json
 
-curl -X PUT -H "X-Vault-Request: true" -H "X-Vault-Token: $(vault print token)" -d '@vcluster-$i-data.json' http://vault.aws.sphinxgaia.jeromemasson.fr/v1/vclusters/data/vcluster-$1
+sleep 1
+
+curl -X PUT -H "X-Vault-Request: true" -H "X-Vault-Token: $(vault print token)" -d @vcluster-$1-data-temp.json http://vault.aws.sphinxgaia.jeromemasson.fr/v1/vclusters/data/vcluster-$1
 
 cat <<EOF > vcluster-$1-policy.hcl
 path "vclusters/data/vcluster-$1" {  capabilities = ["list","read"] }

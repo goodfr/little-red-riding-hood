@@ -3,6 +3,7 @@
 vcluster delete $1 
 
 rm vcluster-$1-data.json
+rm vcluster-$1-data-temp.json
 rm vcluster-$1-vaulttoken
 rm vcluster-$1-policy.hcl
 rm vcluster-$1-kubeconfig.yaml
