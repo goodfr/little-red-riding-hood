@@ -2,7 +2,7 @@
 # Vault Helm Chart Value Overrides
 global:
   enabled: true
-  tlsDisable: true
+  tlsDisable: true # for lab purpose only
 
 injector:
   enabled: true
@@ -20,16 +20,17 @@ injector:
         cpu: 250m
 
 server:
+  ingress:
+    enabled: true
+    ingressClassName: "nginx"
+
+    hosts:
+      - host: vault.kind.cluster
+        paths: []
 
   # extraEnvironmentVars is a list of extra environment variables to set with the stateful set. These could be
   # used to include variables required for auto-unseal.
-  extraSecretEnvironmentVars:
-    - envName: AWS_ACCESS_KEY_ID
-      secretName: eks-creds
-      secretKey: AWS_ACCESS_KEY_ID
-    - envName: AWS_SECRET_ACCESS_KEY
-      secretName: eks-creds
-      secretKey: AWS_SECRET_ACCESS_KEY
+  extraSecretEnvironmentVars: []
 
   # These Resource Limits are in line with node requirements in the
   # Vault Reference Architecture for a Small Cluster
@@ -53,11 +54,7 @@ server:
 
   # extraVolumes is a list of extra volumes to mount. These will be exposed
   # to Vault in the path .
-  extraVolumes:
-    - type: secret
-      name: tls-server
-    - type: secret
-      name: eks-creds
+  extraVolumes: []
 
   # This configures the Vault Statefulset to create a PVC for audit logs.
   # See https://www.vaultproject.io/docs/audit/index.html to know more
@@ -74,11 +71,6 @@ server:
         tls_disable = true
       }
       
-      seal "awskms" {
-        region     = "eu-west-1"
-        kms_key_id = "de887123-fbb7-4164-98af-e142eb338281"
-      }
-
       storage "file" {
         path = "/vault/data"
       }
@@ -143,7 +135,6 @@ server:
 # Vault UI
 ui:
   enabled: true
-  serviceType: "LoadBalancer"
   serviceNodePort: null
   externalPort: 8200
 

@@ -29,9 +29,10 @@ spec:
         vault.hashicorp.com/agent-inject: 'true'
         vault.hashicorp.com/role: 'demo'
         vault.hashicorp.com/agent-inject-secret-test: 'kv/data/test'
+        # ensure path is good
         vault.hashicorp.com/agent-inject-template-test: |
           {{- with secret "kv/data/test" -}}
-          {{ .Data.data.test }}
+          {{ .Data.data.titi }}
           {{- end -}}
     spec:
       serviceAccountName: test

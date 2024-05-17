@@ -4,8 +4,10 @@
 export VAULT_HELM_RELEASE_NAME="vault"
 export VAULT_INTERNAL="vault-internal"
 export K8S_CLUSTER_NAME="cluster.local"
+
 # generate a keypair
 openssl genrsa -out vault.key 2048
+
 # csr config
 tee vault-csr.conf <<EOF
 [req]
@@ -45,9 +47,12 @@ spec:
   - key encipherment
   - server auth
 EOF
+
 kubectl create -f csr.yaml
+
 #approve the csr
 kubectl certificate approve vault.svc
+
 #get the crt
 kubectl get csr vault.svc -o jsonpath='{.status.certificate}' | openssl base64 -d -A -out vault.crt
 
