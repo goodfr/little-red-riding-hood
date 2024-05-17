@@ -3,25 +3,40 @@
 helm repo add kyverno https://kyverno.github.io/kyverno/
 helm repo update
 
-aws-vault exec custom -- kubectl create ns kyverno
+helm search repo kyverno -l
 
-aws-vault exec custom -- helm upgrade --install kyverno kyverno/kyverno -n kyverno  -f overrides.yaml --version v2.5.5
+kubectl create ns kyverno
 
-aws-vault exec custom -- k9s
-aws-vault exec custom -- kubectl apply -f test.yaml
+helm upgrade --install kyverno kyverno/kyverno -n kyverno  -f overrides.yaml --version 3.2.2
 
-aws-vault exec custom -- kubectl apply -f red-riding-hood-red.yaml
-aws-vault exec custom -- kubectl get clusterpolicy -A
+kubectl apply -f tests/test.yaml
+
+kubectl get po -n default
+
+kubectl delete -f tests/test.yaml
+
+kubectl apply -f red-riding-hood-red.yaml
+kubectl get clusterpolicy -A
+
+kubectl apply -f tests/test.yaml
+
+Enforce restriction
+
+kubectl apply -f red-riding-hood-red-restricted.yaml
+kubectl get clusterpolicy
+
+kubectl get clusterpolicy requirements-red | less
+
 
 ## Test Kyverno install
 
-aws-vault exec custom -- kubectl create ns test
-aws-vault exec custom -- kubectl apply -n test -f test.yaml
-aws-vault exec custom -- kubectl delete ns test
+kubectl create ns test
+kubectl apply -n test -f test.yaml
+kubectl delete ns test
 
 ## Debug Install
 
-aws-vault exec custom -- kubectl run busybox --rm -ti --image=busybox -- /bin/sh
+kubectl run busybox --rm -ti --image=busybox -- /bin/sh
 
 wget --no-check-certificate --spider --timeout=1 https://kyverno-svc.kyverno.svc:443/health/liveness
 

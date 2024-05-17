@@ -5,7 +5,7 @@ metadata:
   labels:
     app: nginx
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: nginx
@@ -16,7 +16,12 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: nginx:1.14.2
+        image: alpine # good image but missing label
+        command:
+        - /bin/sh
+        - -c 
+        - |
+          sleep infinity
         ports:
         - containerPort: 80
 ---
@@ -27,7 +32,7 @@ metadata:
   labels:
     app: goldie
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: goldie
@@ -35,10 +40,10 @@ spec:
     metadata:
       labels:
         app: goldie
-        bobinette: pull
+        bobinette: pull # good label
     spec:
       containers:
       - name: goldie
-        image: ghcr.io/sphinxgaia/little-three-goldie-main:red
+        image: ghcr.io/sphinxgaia/little-red-riding-hood-goldie-body:wolf # bad image
         ports:
         - containerPort: 80

@@ -6,7 +6,7 @@ metadata:
 # The `spec` defines properties of the policy.
 spec:
   # The `validationFailureAction` tells Kyverno if the resource being validated should be allowed but reported (`audit`) or blocked (`enforce`).
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
   # The `rules` is one or more rules which must be true.
   rules:
     - name: require-red-label
@@ -22,7 +22,7 @@ spec:
       # The `validate` statement tries to positively check what is defined. If the statement, when compared with the requested resource, is true, it is allowed. If false, it is blocked.
       validate:
         # The `message` is what gets displayed to a user if this rule fails validation and is therefore blocked.
-        message: "You must have label `bobinette` with value `pull` set on all new namespaces and use a specific image"
+        message: "You must have label `bobinette` with value `pull` set on all new namespaces"
         # The `pattern` object defines what pattern will be checked in the resource. In this case, it is looking for `metadata.labels` with `purpose=production`.
         pattern:
           spec:
@@ -30,6 +30,24 @@ spec:
               metadata:
                 labels:
                   bobinette: pull
+    - name: require-good-image
+      # The `match` statement sets the scope of what will be checked. In this case, it is any `Namespace` resource.
+      match:
+        all:
+        - resources:
+            kinds:
+            - Deployment
+            # namespaces:
+            # - "red-zero-trust"
+            # - "green-zero-trust"
+      # The `validate` statement tries to positively check what is defined. If the statement, when compared with the requested resource, is true, it is allowed. If false, it is blocked.
+      validate:
+        # The `message` is what gets displayed to a user if this rule fails validation and is therefore blocked.
+        message: "You must use a specific image"
+        # The `pattern` object defines what pattern will be checked in the resource. In this case, it is looking for `metadata.labels` with `purpose=production`.
+        pattern:
+          spec:
+            template:
               spec:
                 containers:
-                - image: "ghcr.io/sphinxgaia/red-riding-hood-*:red|ghcr.io/sphinxgaia/red-riding-hood-*:green"
+                - image: "ghcr.io/sphinxgaia/little-red-riding-hood-goldie-*:red|ghcr.io/sphinxgaia/little-red-riding-hood-goldie-*:green"

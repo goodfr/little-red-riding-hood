@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: goldie-deployment
+  labels:
+    app: goldie
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: goldie
+  template:
+    metadata:
+      labels:
+        app: goldie
+        bobinette: pull
+    spec:
+      containers:
+      - name: goldie
+        image: ghcr.io/sphinxgaia/little-red-riding-hood-goldie-body:green
+        ports:
+        - containerPort: 80
