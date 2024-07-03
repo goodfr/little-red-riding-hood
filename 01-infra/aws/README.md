@@ -3,13 +3,15 @@
 
 ## Usage
 
+> You should be connected before `terraform apply` command
+
 To run this example you need to execute:
 
 ```bash
-aws-vault exec custom -- terraform init
-aws-vault exec custom -- terraform apply -auto-approve
+terraform init
+terraform apply -auto-approve
 
-aws-vault exec custom -- aws eks update-kubeconfig --region eu-west-1 --name red-riding-hood
+aws eks update-kubeconfig --region eu-west-1 --name red-riding-hood
 
 cd ../../02-demo/00-preconfig
 ```
