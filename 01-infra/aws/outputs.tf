@@ -200,11 +200,6 @@ output "self_managed_node_groups_autoscaling_group_names" {
 # Additional
 ################################################################################
 
-output "aws_auth_configmap_yaml" {
-  description = "Formatted yaml output for base aws-auth configmap containing roles used in cluster node groups/fargate profiles"
-  value       = module.eks.aws_auth_configmap_yaml
-}
-
 output "vault_aws_kms_key" {
   description = "Vault KMS auto-unseal key"
   value = aws_kms_key.vault_kms.key_id

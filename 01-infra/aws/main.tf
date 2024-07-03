@@ -16,13 +16,11 @@ provider "kubernetes" {
 
 locals {
   name            = var.tale
-  cluster_version = "1.22"
+  cluster_version = "1.29"
   region          = "eu-west-1"
 
   tags = {
     Tales    = local.name
-    # GithubRepo = "terraform-aws-eks"
-    # GithubOrg  = "terraform-aws-modules"
   }
 }
 
@@ -33,7 +31,7 @@ data "aws_caller_identity" "current" {}
 ################################################################################
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "18.30.2"
+  version = "~> 20.0"
 
   cluster_name                    = local.name
   cluster_version                 = local.cluster_version
@@ -41,28 +39,50 @@ module "eks" {
   cluster_endpoint_public_access  = true
 
   cluster_addons = {
-    # coredns = {
-    #   resolve_conflicts = "OVERWRITE"
-    #   addon_version = "v1.8.7-eksbuild.1"
-    # }
-    kube-proxy = {}
-    vpc-cni = {
-      addon_version = "v1.11.4-eksbuild.1"
-      resolve_conflicts = "OVERWRITE"
-    }
+    coredns                = {}
+    eks-pod-identity-agent = {}
+    kube-proxy             = {}
+    vpc-cni                = {}
   }
 
-  cluster_encryption_config = [{
-    provider_key_arn = aws_kms_key.eks.arn
-    resources        = ["secrets"]
-  }]
+  vpc_id                   = module.vpc.vpc_id
+  subnet_ids               = module.vpc.private_subnets
 
-  vpc_id     = module.vpc.vpc_id
-  subnet_ids = module.vpc.private_subnets
+  # EKS Managed Node Group(s)
+  eks_managed_node_groups = {
+    example = {
+      ami_type       = "BOTTLEROCKET_x86_64"
+      instance_types = ["t3.medium"]
 
-  # Self managed node groups will not automatically create the aws-auth configmap so we need to
-  create_aws_auth_configmap = true
-  manage_aws_auth_configmap = true
+      min_size = 2
+      max_size = 5
+      # This value is ignored after the initial creation
+      # https://github.com/bryantbiggs/eks-desired-size-hack
+      desired_size = 2
+
+      # This is not required - demonstrates how to pass additional configuration
+      # Ref https://bottlerocket.dev/en/os/1.19.x/api/settings/
+      bootstrap_extra_args = <<-EOT
+        # The admin host container provides SSH access and runs with "superpowers".
+        # It is disabled by default, but can be disabled explicitly.
+        [settings.host-containers.admin]
+        enabled = false
+
+        # The control host container provides out-of-band access via SSM.
+        # It is enabled by default, and can be disabled if you do not expect to use SSM.
+        # This could leave you with no way to access the API and change settings on an existing node!
+        [settings.host-containers.control]
+        enabled = true
+
+        # extra args added
+        [settings.kernel]
+        lockdown = "integrity"
+        [settings.kubernetes.node-labels]
+        "red-archi" = "enabled"
+        ingress = "allowed"
+      EOT
+    }
+  }
 
   # Extend cluster security group rules
   cluster_security_group_additional_rules = {
@@ -97,81 +117,32 @@ module "eks" {
     }
   }
 
-  self_managed_node_group_defaults = {
-    create_security_group = false
+  # Cluster access entry
+  # To add the current caller identity as an administrator
+  enable_cluster_creator_admin_permissions = true
 
-    # enable discovery of autoscaling groups by cluster-autoscaler
-    # autoscaling_group_tags = {
-    #   "k8s.io/cluster-autoscaler/enabled" : true,
-    #   "k8s.io/cluster-autoscaler/${local.name}" : "owned",
-    # }
+  # access_entries = {
+  #   # One access entry with a policy associated
+  #   example = {
+  #     kubernetes_groups = []
+  #     principal_arn     = "arn:aws:iam::123456789012:role/something"
+
+  #     policy_associations = {
+  #       example = {
+  #         policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
+  #         access_scope = {
+  #           namespaces = ["default"]
+  #           type       = "namespace"
+  #         }
+  #       }
+  #     }
+  #   }
+  # }
+
+  tags = {
+    Environment = "dev"
+    Terraform   = "true"
   }
-
-  self_managed_node_groups = {
-    # Default node group - as provisioned by the module defaults
-    # default_node_group = {}
-
-    # Bottlerocket node group
-    # bottlerocket = {
-    #   name = "bottlerocket-eks"
-
-    #   platform      = "bottlerocket"
-    #   ami_id        = data.aws_ami.eks_default_bottlerocket.id
-    #   instance_type = "t3.medium"
-    #   desired_size  = 2
-    #   key_name      = aws_key_pair.this.key_name
-
-    #   iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
-
-    #   bootstrap_extra_args = <<-EOT
-    #   # The admin host container provides SSH access and runs with "superpowers".
-    #   # It is disabled by default, but can be disabled explicitly.
-    #   [settings.host-containers.admin]
-    #   enabled = false
-
-    #   # The control host container provides out-of-band access via SSM.
-    #   # It is enabled by default, and can be disabled if you do not expect to use SSM.
-    #   # This could leave you with no way to access the API and change settings on an existing node!
-    #   [settings.host-containers.control]
-    #   enabled = true
-
-    #   [settings.kubernetes.node-labels]
-    #   ingress = "allowed"
-    #   EOT
-    # }
-    
-    # Little-red-riding-hood node group
-    red-riding-hood = {
-      name = "red-riding-hood"
-
-      platform      = "bottlerocket"
-      ami_id        = data.aws_ami.eks_default_bottlerocket.id
-      instance_type = "t3.medium"
-      desired_size  = 3
-      key_name      = aws_key_pair.this.key_name
-
-      iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
-
-      bootstrap_extra_args = <<-EOT
-      # The admin host container provides SSH access and runs with "superpowers".
-      # It is disabled by default, but can be disabled explicitly.
-      [settings.host-containers.admin]
-      enabled = false
-
-      # The control host container provides out-of-band access via SSM.
-      # It is enabled by default, and can be disabled if you do not expect to use SSM.
-      # This could leave you with no way to access the API and change settings on an existing node!
-      [settings.host-containers.control]
-      enabled = true
-
-      [settings.kubernetes.node-labels]
-      "red-archi" = "enabled"
-      ingress = "allowed"
-      EOT
-    }   
-  }
-
-  tags = local.tags
 }
 
 ################################################################################
@@ -180,7 +151,7 @@ module "eks" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 3.0"
+  version = "5.8.1"
 
   name = local.name
   cidr = "10.0.0.0/16"
@@ -193,10 +164,6 @@ module "vpc" {
   single_nat_gateway   = true
   enable_dns_hostnames = true
 
-  enable_flow_log                      = true
-  create_flow_log_cloudwatch_iam_role  = true
-  create_flow_log_cloudwatch_log_group = true
-
   public_subnet_tags = {
     "kubernetes.io/cluster/${local.name}" = "shared"
     "kubernetes.io/role/elb"              = 1
@@ -208,134 +175,6 @@ module "vpc" {
   }
 
   tags = local.tags
-}
-
-resource "aws_security_group" "additional" {
-  name_prefix = "${local.name}-additional"
-  vpc_id      = module.vpc.vpc_id
-
-  ingress {
-    from_port = 22
-    to_port   = 22
-    protocol  = "tcp"
-    cidr_blocks = [
-      "10.0.0.0/8",
-      "172.16.0.0/12",
-      "192.168.0.0/16",
-    ]
-  }
-
-  tags = local.tags
-}
-
-resource "aws_kms_key" "eks" {
-  description             = "EKS Secret Encryption Key"
-  deletion_window_in_days = 7
-  enable_key_rotation     = true
-
-  tags = local.tags
-}
-
-data "aws_ami" "eks_default" {
-  most_recent = true
-  owners      = ["amazon"]
-
-  filter {
-    name   = "name"
-    values = ["amazon-eks-node-${local.cluster_version}-v*"]
-  }
-}
-
-data "aws_ami" "eks_default_bottlerocket" {
-  most_recent = true
-  owners      = ["amazon"]
-
-  filter {
-    name   = "name"
-    values = ["bottlerocket-aws-k8s-${local.cluster_version}-x86_64-*"]
-  }
-}
-
-resource "tls_private_key" "this" {
-  algorithm = "RSA"
-}
-
-resource "aws_key_pair" "this" {
-  key_name   = local.name
-  public_key = tls_private_key.this.public_key_openssh
-}
-
-resource "aws_kms_key" "ebs" {
-  description             = "Customer managed key to encrypt self managed node group volumes"
-  deletion_window_in_days = 7
-  policy                  = data.aws_iam_policy_document.ebs.json
-}
-
-# This policy is required for the KMS key used for EKS root volumes, so the cluster is allowed to enc/dec/attach encrypted EBS volumes
-data "aws_iam_policy_document" "ebs" {
-  # Copy of default KMS policy that lets you manage it
-  statement {
-    sid       = "Enable IAM User Permissions"
-    actions   = ["kms:*"]
-    resources = ["*"]
-
-    principals {
-      type        = "AWS"
-      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
-    }
-  }
-
-  # Required for EKS
-  statement {
-    sid = "Allow service-linked role use of the CMK"
-    actions = [
-      "kms:Encrypt",
-      "kms:Decrypt",
-      "kms:ReEncrypt*",
-      "kms:GenerateDataKey*",
-      "kms:DescribeKey"
-    ]
-    resources = ["*"]
-
-    principals {
-      type = "AWS"
-      identifiers = [
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling", # required for the ASG to manage encrypted volumes for nodes
-        module.eks.cluster_iam_role_arn,                                                                                                            # required for the cluster / persistentvolume-controller to create encrypted PVCs
-      ]
-    }
-  }
-
-  statement {
-    sid       = "Allow attachment of persistent resources"
-    actions   = ["kms:CreateGrant"]
-    resources = ["*"]
-
-    principals {
-      type = "AWS"
-      identifiers = [
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling", # required for the ASG to manage encrypted volumes for nodes
-        module.eks.cluster_iam_role_arn,                                                                                                            # required for the cluster / persistentvolume-controller to create encrypted PVCs
-      ]
-    }
-
-    condition {
-      test     = "Bool"
-      variable = "kms:GrantIsForAWSResource"
-      values   = ["true"]
-    }
-  }
-}
-
-resource "aws_security_group_rule" "webhook_kyverno" {
-  description = "Kyverno Webhook configuration"
-  type              = "ingress"
-  from_port         = 9443
-  to_port           = 9443
-  protocol          = "tcp"
-  source_security_group_id = module.eks.cluster_security_group_id
-  security_group_id = module.eks.node_security_group_id
-  
 }
 
 resource "aws_kms_key" "vault_kms" {
