@@ -6,7 +6,7 @@ metadata:
 # The `spec` defines properties of the policy.
 spec:
   # The `validationFailureAction` tells Kyverno if the resource being validated should be allowed but reported (`audit`) or blocked (`enforce`).
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
 
   # The `rules` is one or more rules which must be true.
   rules:
@@ -22,9 +22,6 @@ spec:
         - resources:
             kinds:
             - Deployment
-            # namespaces:
-            # - "red-zero-trust"
-            # - "green-zero-trust"
       # The `validate` statement tries to positively check what is defined. If the statement, when compared with the requested resource, is true, it is allowed. If false, it is blocked.
       validate:
         # The `message` is what gets displayed to a user if this rule fails validation and is therefore blocked.
@@ -38,4 +35,4 @@ spec:
                   bobinette: pull
               spec:
                 containers:
-                - image: "ghcr.io/sphinxgaia/little-red-riding-hood-*:red|ghcr.io/sphinxgaia/little-red-riding-hood-*:green"
+                - image: "ghcr.io/sphinxgaia/little-red-riding-hood-*:red"
