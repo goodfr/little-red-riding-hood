@@ -122,11 +122,11 @@ linkerd viz dashboard --address 0.0.0.0
 
 Ouvrir alors le dashboard depuis votre navigateur à l'adresse [http://localhost:50750](http://localhost:50750)
 
-![Dashboard1](./dashboard1.png)
+![Dashboard1](dashboard1.png)
 
 Selectionner votre namespace pour visualiser les différentes statistiques de trafic sur nos déploiements.
 
-![Dashboard2](./dashboard2.png)
+![Dashboard2](dashboard2.png)
 
 Toutes les métriques associées à vos déploiements et pods sont disponibles en temps réel.
 

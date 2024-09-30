@@ -1,9 +1,9 @@
 module "kubernetes" {
-  source = "./kubernetes"
+  source = "kubernetes"
 }
 
 module "boundary" {
-  source = "./boundary"
+  source = "boundary"
   addr   = "http://${module.kubernetes.boundary_loadbalancer}:9200"
 
 }
