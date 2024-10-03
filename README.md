@@ -15,13 +15,13 @@ des communications, la gestion des secrets, et l'authentification.
 Voici ce que nous réaliserons ensemble lors de cette séance :
 
 1. **Déployer une application Kubernetes**
-   * `kyverno` pour la mise en place de politiques de validation ce qui permet de garantir que les ressources déployées 
-   seront conformes aux normes définies.
    * `trivy` pour l'analyse des vulnérabilités des images Docker déployées sur le cluster Kubernetes et générer des 
    rapports sur les vulnérabilités trouvées afin d'assurer la sécurité des applications déployées.
    * `linkerd` pour la sécurisation des communications entre les microservices déployés sur le cluster Kubernetes.
    * `vault` pour la gestion des secrets et s'assurer que les applications déployées n'ont pas accès aux secrets 
    auxquels elles n'ont pas le droit d'accéder.
+   * `kyverno` pour la mise en place de politiques de validation ce qui permet de garantir que les ressources déployées 
+   seront conformes aux normes définies.
 
 2. **Accéder au cluster en toute sécurité**
    * `boundary` pour l'authentification et l'autorisation des utilisateurs pour accèder aux API du cluster Kubernetes.
@@ -150,20 +150,6 @@ plus sûre.
 Pour obtenir une version dite "zero trust" de votre cluster, nous vous conseillons de suivre l'ordre des déploiements et 
 en particulier de faire l'étape `boundary` en dernier.
 
-### Kyverno - Moteur de Politique pour Kubernetes
-![Kyverno](images/kyverno_logo.png)
-
-Kyverno est un moteur de politique open-source pour Kubernetes qui automatise la gestion et l'application de politiques
-de sécurité, de conformité et opérationnelles dans un cluster Kubernetes. Il permet aux administrateurs de cluster de
-définir des politiques de manière déclarative et de les appliquer automatiquement à toutes les demandes entrantes et
-sortantes dans le cluster. Les politiques peuvent être définies à l'aide de ressources personnalisées Kubernetes ou
-de fichiers YAML, et peuvent être appliquées au niveau du namespace ou du cluster.
-
-Nous vous proposons d'installer Kyverno sur le cluster pour définir une politique de sécurité pour interdire certains
-déploiements sur votre cluster.
-
-[Step Kyverno](labs/01-kyverno)
-
 ## Trivy
 ![Trivy](images/trivy_logo.png)
 
@@ -180,7 +166,7 @@ mais de nouvelles vulnérabilités peuvent apparaître au moment du déploiement
 d'installer Trivy pour scanner les images lors du déploiement sur le cluster. Nous utiliserons cet outil pour vérifier
 les images déployées sur notre cluster et générer des rapports sur les vulnérabilités trouvées.
 
-[Step Trivy](labs/02-trivy-scanner)
+[Step Trivy](labs/01-trivy-scanner)
 
 ## Vault
 ![Vault](images/Vault_logo.png)
@@ -197,7 +183,7 @@ problèmes de sécurité. Des solutions comme Vault permettent de stocker les se
 distribuer aux applications de manière sécurisée au moment de leur démarrage. Nous utiliserons Vault pour contrôler
 l'accès aux secrets stockés dans le cluster Kubernetes uniquement aux applications qui en ont besoin.
 
-[Step Vault](labs/03-vault)
+[Step Vault](labs/02-vault)
 
 
 ## Linkerd
@@ -213,7 +199,21 @@ entre nos différents microservices et garantir la confidentialité et l'intégr
 également les fonctionnalités de monitoring et de traçabilité de Linkerd pour surveiller les golden métriques de nos
 microservices.
 
-[Step Linkerd](labs/04-linkerd)
+[Step Linkerd](labs/03-linkerd)
+
+### Kyverno - Moteur de Politique pour Kubernetes
+![Kyverno](images/kyverno_logo.png)
+
+Kyverno est un moteur de politique open-source pour Kubernetes qui automatise la gestion et l'application de politiques
+de sécurité, de conformité et opérationnelles dans un cluster Kubernetes. Il permet aux administrateurs de cluster de
+définir des politiques de manière déclarative et de les appliquer automatiquement à toutes les demandes entrantes et
+sortantes dans le cluster. Les politiques peuvent être définies à l'aide de ressources personnalisées Kubernetes ou
+de fichiers YAML, et peuvent être appliquées au niveau du namespace ou du cluster.
+
+Nous vous proposons d'installer Kyverno sur le cluster pour définir une politique de sécurité pour interdire certains
+déploiements sur votre cluster.
+
+[Step Kyverno](labs/04-kyverno)
 
 ## Boundary
 

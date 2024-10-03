@@ -35,4 +35,4 @@ spec:
                   bobinette: pull
               spec:
                 containers:
-                - image: "ghcr.io/sphinxgaia/little-red-riding-hood-*:red"
+                - image: "ghcr.io/sphinxgaia/little-red-riding-hood-*:red|node:*-alpine"

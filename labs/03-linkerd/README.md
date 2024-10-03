@@ -71,7 +71,7 @@ cd /apps/01-red-riding-hood-v1/static
 kubectl apply -f manifest-red.yaml -n $NAMESPACE
 ```
 ---
-**Note**: Les politiques mises en place lors de l'étape [Kyverno](../01-kyverno) peuvent empêcher le déploiement.
+**Note**: Les politiques mises en place lors de l'étape [Kyverno](../04-kyverno) peuvent empêcher le déploiement.
 Modifier la configuration de la politique pour autoriser le déploiement sur le namespace que vous avez choisi
 (soit au niveau de la configuration globale de Kyverno soit en modifiant la politique Cluster).
 Une fois configuré, appliquer de nouveau la commande
