@@ -8,7 +8,7 @@ metadata:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: red-little-red-riding-hood-goldie-body
+  name: little-red-riding-hood-goldie-body
   namespace: red
   labels:
     helm.sh/chart: little-red-riding-hood-goldie-0.1.0
@@ -109,7 +109,7 @@ spec:
         app.kubernetes.io/instance: red-body
     spec:
       terminationGracePeriodSeconds: 5
-      serviceAccountName: red-little-red-riding-hood-goldie-body
+      serviceAccountName: little-red-riding-hood-goldie-body
       securityContext:
         {}
       initContainers:

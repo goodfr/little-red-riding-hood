@@ -1,177 +1,162 @@
-![Linkerd](../../images/linkerd_logo.png)
+# Installation et Configuration de Linkerd
 
-## Installation et configuration de linkerd
+## Édito
 
-Pour faciliter l'installation de linkerd, nous utiliserons l'image
-docker de tooling que nous vous avons fournie.
+## Objectif
+Dans un royaume technologique en constante évolution, de nombreuses applications cohabitent, chacune jouant un rôle 
+crucial pour le bon fonctionnement du royaume. Cependant, entre ces applications réside un danger invisible : le loup, 
+qui menace la sécurité des communications et l'intégrité des données. 
+Pour faire face à cette menace, nos héros doivent unir leurs forces et recourir aux meilleurs outils afin de défendre 
+leur territoire numérique. C'est ainsi que Linkerd entre en scène, promettant de transformer le paysage de la gestion 
+du trafic entre services.
+
+En déployant Linkerd, nous allons établir un maillage de services capable de sécuriser les échanges grâce à des 
+communications chiffrées, tout en assurant une observabilité accrue grâce à des métriques en temps réel. Cet exercice 
+vous apprendra à installer et à configurer Linkerd afin que les applications puissent fonctionner en toute sécurité, 
+sans craindre les attaques du loup.
+
+## Installation de Linkerd
+
+Pour commencer l'installation de Vault, nous allons utiliser l'image Docker de tooling fournie.
+
+### Étapes d'Installation
+1. Configuration de l'environnement :
+Exécutez les commandes suivantes pour préparer votre environnement :
 
 ```bash
-export REPO_ROOT_DIR=<chemin vers le clone du projet>
-export KUBECONFIG=<chemin vers le fichier du config du cluster kubernetes>
-docker run --rm -v $KUBECONFIG:/home/tooling/kubeconfig.yaml -v $REPO_ROOT_DIR/labs/:/apps -it -p 50750:50750 ghcr.io/ddrugeon/devoxx2023-tooling
+export REPO_ROOT_DIR=$(pwd)
+export KUBECONFIG=$(pwd)/kubeconfig
+docker run --rm -v $KUBECONFIG:/home/tooling/.kube/config -v $REPO_ROOT_DIR/labs:/labs -it ghcr.io/ddrugeon/little-red-riding-hood-tooling:latest
 ```
 
-Créer votre namespace de travail
+2. Avant d'installer Linkerd, vérifiez si votre cluster est prêt :
 
-```bash
-export NAMESPACE=monnamespaceamoi
-kubectl create ns $NAMESPACE
-```
-
-Vérifier si le cluster est prét pour utilser linkerd:
 ```bash
 linkerd check --pre
 ```
 
-Installons les CRD ainsi que linkerd sur le cluster
+3. Installer Linkerd et les CRD :
+
 ```bash
 linkerd install --crds | kubectl apply -f -
-linkerd install | kubectl apply -f -
+linkerd install --set proxyInit.runAsRoot=true | kubectl apply -f -
 ```
 
-Vérifier Linkerd est correctement installé et configuré:
+3. Assurez-vous que Linkerd est correctement installé :
+
 ```bash
-linkerd check 
+linkerd check
 ```
-Linkerd propose un dashboard permettant d'observer les différentes métriques associées à nos déploiements. Celui-ci
-n'est pas déployé par défaut. Installons-le sur notre cluster.
+
+4. Installez le dashboard de Linkerd pour visualiser les métriques :
 
 ```bash
 linkerd viz install | kubectl apply -f -
 ```
 
-Vérifier le dashboard est correctement installé et configuré:
-```bash
-linkerd check 
-```
-
-## Installation et configuration de nos déploiements
-
-Nous allons déployer ensuite le manifeste permettant de créer les ressources du projet à savoir:
-
-- 2 services:
-  - goldie-body: exposé uniquement en interne sur le port 9007.
-    - /metrics : endpoint prometheus qui sert aussi de liveprobe et readiness probe
-    - /images/body.svg pour obtenir l’image de notre personnage
-  - little-red-riding-hood-goldie-main: service exposé à l’extérieur via un CLB
-    - / : endpoint pour obtenir la page principale de notre service
-- 2 déploiements:
-  - little-red-riding-hood-goldie-body
-  - little-red-riding-hood-goldie-main
-- 2 service accounts dédiés:
-  - little-red-riding-hood-goldie-body
-  - little-red-riding-hood-goldie-main
-
-Déplacer vous dans le dossier 01-red-riding-hood-v1
-```bash
-cd /apps/01-red-riding-hood-v1/static
-```
+5. Vérifiez que le dashboard est correctement installé :
 
 ```bash
-kubectl apply -f manifest-red.yaml -n $NAMESPACE
+linkerd check
 ```
----
-**Note**: Les politiques mises en place lors de l'étape [Kyverno](../04-kyverno) peuvent empêcher le déploiement.
-Modifier la configuration de la politique pour autoriser le déploiement sur le namespace que vous avez choisi
-(soit au niveau de la configuration globale de Kyverno soit en modifiant la politique Cluster).
-Une fois configuré, appliquer de nouveau la commande
-```bash
-kubectl apply -f manifest-red.yaml -n $NAMESPACE
-```
----
 
-Puis, vérifier que les déploiements s’executent sans aucun problème:
+## Déploiement des Applications (Optionnel)
+
+> **Note:** 
+> cette étape est optionnelle, si vous avez déjà fait l'étape 02-vault
+
+Nous allons maintenant déployer les applications et les services nécessaires :
+
+1. Naviguer vers le Répertoire de l'Application :
 
 ```bash
-❯ k -n $NAMESPACE get deploy
+cd /labs/01-red-riding-hood-v1
 ```
 
-## Ajout du maillage via linkerd
-
-Vérifier via linkerd que les pods existants sur votre namespace ne sont pas géré par linkerd
+2. Appliquez le manifeste pour créer les services et déploiements :
 
 ```bash
-kubectl -n $NAMESPACE get po -o jsonpath='{.items[0].spec.containers[*].name}'
+kubectl apply -f manifest-red.yaml -n red
 ```
 
-Modifions nos déploiements pour ajouter dynamiquement un conteneur sidecar (linkerd proxy)
+3. Vérifiez que les déploiements se déroulent sans problème :
 
 ```bash
-kubectl -n $NAMESPACE get deploy -o yaml | linkerd inject - | kubectl apply -n $NAMESPACE -f -
+kubectl -n red get deploy
 ```
 
-Vérifier de nouveau que le dataplane de linkerd a bien été injecté dans nos déploiements.
+## Ajout du Maillage avec Linkerd
+
+1. Vérifiez que les pods existants sur votre namespace ne sont pas gérés par Linkerd :
 
 ```bash
-kubectl -n $NAMESPACE get po -o jsonpath='{.items[0].spec.containers[*].name}' | grep linkerd-proxy
+kubectl -n red get po -o jsonpath='{.items[0].spec.containers[*].name}'
 ```
 
-Vérifiez les droits associés à chacune des routes de nos services. Tout le trafic entre nos services est autorisé.
+2. Modifiez les déploiements pour ajouter le proxy Linkerd :
 
 ```bash
-linkerd viz authz -n $NAMESPACE deploy
+kubectl -n red get deploy -o yaml | linkerd inject - | kubectl apply -n red -f -
 ```
 
-## Linkerd dashboard
-
-Accédons à l'interface web proposée par le dashboard.
+3.Assurez-vous que le proxy Linkerd a bien été injecté :
 
 ```bash
-linkerd viz dashboard --address 0.0.0.0
+kubectl -n red get po -o jsonpath='{.items[0].spec.containers[*].name}' | grep linkerd-proxy
 ```
 
-Ouvrir alors le dashboard depuis votre navigateur à l'adresse [http://localhost:50750](http://localhost:50750)
+4. Vérifiez que tout le trafic entre les services est autorisé :
 
-![Dashboard1](dashboard1.png)
+```bash
+linkerd viz authz -n red deploy
+```
 
-Selectionner votre namespace pour visualiser les différentes statistiques de trafic sur nos déploiements.
+## Accesser le Dashboard de Linkerd
 
-![Dashboard2](dashboard2.png)
+1. Accédez à l'interface web du dashboard pour visualiser les métriques :
 
-Toutes les métriques associées à vos déploiements et pods sont disponibles en temps réel.
+```bash
+linkerd viz dashboard --address 127.0.0.1
+```
 
-Sélectionner le déploiement `little-red-riding-hood-goldie-body`
+2. Ouvrez ensuite le dashboard dans votre navigateur à l'adresse http://localhost:50750.
 
-Puis dans un autre terminal, générer du trafic sur l'ingress.
----
-**Note**: Changer l'url de votre ingress tel que vous l'avez modifié au préalable.
-Par exemple, si je suis sur le cluster `toto2`, je remplace `vcluster-test-green.aws.sphinxgaia.jeromemasson.fr` par `vcluster-toto2-green.aws.sphinxgaia.jeromemasson.fr`.
----
+3. Choisissez le namespace `red` pour visualiser les statistiques de trafic sur vos déploiements.
+
+4. Sélectionnez le déploiement little-red-riding-hood-goldie-body, puis dans un autre terminal, 
+générez du trafic sur l'ingress :
+
+> **Note :** Modifiez l'URL de votre ingress en fonction de ce que vous avez configuré.
 
 ```bash
 while [ true ]; do curl -sS http://vcluster-test-red.aws.sphinxgaia.jeromemasson.fr > /dev/null ; done;
 ```
+5. Observez l'augmentation du trafic sur le déploiement.
 
-En générant du trafic sur notre ingress, le trafic sur notre déploiement augmente.
-Les path les plus sollicités sont alors affichés.
+## Sécurisation avec mTLS
 
-## mTLS
+L'un des avantages d'un service mesh est la sécurisation des communications via TLS mutuel, sans avoir à 
+le gérer dans vos déploiements.
 
-Un des points forts d’un service mesh est la sécurisation des communications via du TLS mutuel
-sans devoir le gérer dans nos déploiements.
-
-Vérifions si le trafic entre nos pods est sécurisé.
+1. Vérifiez si le trafic entre vos pods est sécurisé :
 
 ```bash
- linkerd viz -n $NAMESPACE edges deployment
+linkerd viz -n red edges deployment
 ```
 
-Pour de plus amples détails : [https://linkerd.io/2.12/tasks/validating-your-traffic/](https://linkerd.io/2.12/tasks/validating-your-traffic/)
+> Note: Pour des détails supplémentaires, consultez la documentation de Linkerd.
 
-## Restreindre les accès à nos services
+## Restreindre l'Accès à Nos Services
 
-Nous pouvons sécuriser les accès à nos services. Dans notre exemple, nous voulons protéger le service goldie-body  pour qu'il ne soit accessible que par notre service prinicpal.
+Nous allons sécuriser l'accès à nos services. Dans cet exemple, nous voulons protéger le service goldie-body pour 
+qu'il ne soit accessible que par notre service principal.
 
-### Création d’une nouvelle ressource : le Server
-
-Le server est une ressource spécifique à Linkerd qui décrit les ports spécifiques à nos applications. Une fois que nous aurons déclarés notre Server, seuls les clients autorisés pourront accéder à notre ressource.
-
-Appliquer la définition de notre server goldie-body :
+1. Appliquez la définition pour le serveur goldie-body :
 
 ```bash
-kubectl apply -n $NAMESPACE -f - <<EOF
+kubectl apply -n red -f - <<EOF
 ---
-apiVersion: policy.linkerd.io/v1beta1
+apiVersion: policy.linkerd.io/v1beta3
 kind: Server
 metadata:
   name: goldie-body-http
@@ -181,33 +166,30 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app.kubernetes.io/name: little-red-riding-hood-goldie-body
+      app.kubernetes.io/name: little-red-riding-hood-goldie-main
   port: http
   proxyProtocol: HTTP/1
 EOF
 ```
-Vérifier que le server a bien été créé
+
+2. Assurez-vous que le serveur a été correctement créé :
 
 ```bash
-kubectl get server -n $NAMESPACE
+kubectl get server -n red
 ```
 
-Accéder à l'aide de votre navigateur à l'url de votre ingress. L'image du goldie ne doit plus s'afficher.
-En effet, nous n'avons pas autorisé aucun trafic vers notre déploiement little-red-riding-hood-goldie-body.
+3. Accédez à l'URL de votre ingress. L'image de Goldie ne doit plus s'afficher, puisque le trafic n'est pas autorisé.
 
-Vérifier qu'aucun trafic entrant n'est autorisé
+4. Vérifiez qu'aucun trafic entrant n'est autorisé :
 
 ```bash
-linkerd viz authz -n $NAMESPACE deploy/little-red-riding-hood-goldie-body
+linkerd viz authz -n red deploy/little-red-riding-hood-goldie-body
 ```
-
-La route goldie-body-http par défaut n’est plus autorisée.
-
-Autorisons l’accès à notre route uniquement pour les déploiements associés à notre service account.
-Appliquer la définition suivante:
+5. Appliquez la définition suivante pour autoriser l'accès à la route uniquement pour les déploiements associés à 
+notre service account :
 
 ```bash
-kubectl apply -n $NAMESPACE -f - <<EOF
+kubectl apply -n red -f - <<EOF
 ---
 apiVersion: policy.linkerd.io/v1beta1
 kind: ServerAuthorization
@@ -219,24 +201,23 @@ metadata:
 spec:
   server:
     name: goldie-body-http
-  # The voting service only allows requests from the web service.
   client:
     meshTLS:
       serviceAccounts:
-        - name: red-little-red-riding-hood-goldie-main
+        - name: little-red-riding-hood-goldie-main
 EOF
 ```
 
-Accédez de nouveau à notre page web, l’image de notre goldie est revenue.
-Vérifions que le trafic depuis un autre conteneur n'est pas autorisé.
+Accédez à nouveau à la page web, l'image de Goldie devrait apparaître.
+
+6. Vérifiez que le trafic d'autres conteneurs n'est pas autorisé :
 
 ```bash
 kubectl run debug --rm -it --image=busybox --restart=Never --command -- wget goldie-body.red.svc.cluster.local:9007/images/body.svg
 ```
 
-Pour aller plus loin, nous pouvons aussi refuser toutes les connexions à nos services si aucun server n’est défini.
-Nous pouvons aussi définir des politiques sur des routes spécifiques pour ajouter automatiquement un timeout, un circuit breaker etc.
-Pour plus d’infos aller sur la page [https://linkerd.io/2.12/tasks/configuring-per-route-policy/](https://linkerd.io/2.12/tasks/configuring-per-route-policy/)
-## Back
-
-[Next Step](../)
+## Conclusion
+Linkerd permet de sécuriser vos services en gérant les communications inter-containers et en imposant des politiques 
+d'accès. Cette configuration est essentielle pour maintenir une architecture microservices sécurisée et fonctionnelle. 
+Pour aller plus loin, vous pouvez explorer des fonctionnalités avancées comme les timeouts, les circuit breakers, 
+et bien plus, en consultant la documentation de Linkerd.

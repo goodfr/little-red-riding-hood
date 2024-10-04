@@ -5,3 +5,4 @@ spec:
         vault.hashicorp.com/agent-inject: 'true'
         vault.hashicorp.com/role: 'little-red'
         vault.hashicorp.com/agent-grand-ma-secret.txt: 'little-red/data/grand-ma-secret'
+        vault.hashicorp.com/agent-init-first: 'true'

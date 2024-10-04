@@ -8,7 +8,7 @@ metadata:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: red-little-red-riding-hood-goldie-body
+  name: little-red-riding-hood-goldie-main
   namespace: red
   labels:
     helm.sh/chart: little-red-riding-hood-goldie-0.1.0
@@ -21,7 +21,7 @@ metadata:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: red-little-red-riding-hood-goldie-main
+  name: little-red-riding-hood-goldie-main
   namespace: red
   labels:
     helm.sh/chart: little-red-riding-hood-goldie-0.1.0
@@ -60,7 +60,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: red-little-red-riding-hood-goldie-main
+  name: little-red-riding-hood-goldie-main
   namespace: red
   labels:
     kubernetes.io/instance: main-server
@@ -109,7 +109,7 @@ spec:
         app.kubernetes.io/instance: red-body
     spec:
       terminationGracePeriodSeconds: 5
-      serviceAccountName: red-little-red-riding-hood-goldie-body
+      serviceAccountName: little-red-riding-hood-goldie-main
       securityContext:
         {}
       initContainers:
@@ -171,7 +171,7 @@ spec:
         app.kubernetes.io/instance: red-main
     spec:
       terminationGracePeriodSeconds: 5
-      serviceAccountName: red-little-red-riding-hood-goldie-main
+      serviceAccountName: little-red-riding-hood-goldie-main
       securityContext:
         {}
       containers:
@@ -219,6 +219,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: red-little-red-riding-hood-goldie-main
+                name: little-red-riding-hood-goldie-main
                 port:
                   number: 80
