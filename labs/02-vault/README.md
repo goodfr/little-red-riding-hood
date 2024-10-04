@@ -1,9 +1,18 @@
 # Utilisation de Vault pour l'Injection Dynamique de Secrets
 ## Edito
 
-Imaginez que Mère Grand dépose ses codes d'accès dans un coffre-fort, accessible uniquement à Goldie Rouge. Cet exercice 
-vise à configurer et à déployer une application Kubernetes capable d'accéder à des secrets stockés dans HashiCorp Vault,
-tout en empêchant le Loup d'y accéder.
+Dans un village paisible, Mère Grand protégeait jalousement ses secrets, dissimulant ses digicodes d'entrée dans un 
+coffre-fort. Pour assurer sa sécurité, elle savait qu'elle devait éviter que le maléfique loup, toujours en quête 
+d'aventures malicieuses, ne mette la main sur ses précieuses informations. Avec l'aide de l'innocente Goldie Rouge, 
+la seule autorisée à pénétrer dans le sanctuaire de Mère Grand, ils décidèrent de renforcer la protection de ces secrets 
+vitaux.
+
+Ainsi, ce voyage nous invite à découvrir l'univers de Vault, un outil puissant pour stocker des secrets de façon 
+sécurisée. À travers cet exercice, vous apprendrez à configurer Vault pour garantir que seules les personnes autorisées 
+peuvent accéder aux informations sensibles, tout en empêchant le loup de contrecarrer les plans de Mère Grand. 
+
+Ensemble, nous prendrons des mesures pour renforcer la sécurité de vos applications dans un environnement Kubernetes, 
+assurant ainsi la tranquillité d'esprit de tous.
 
 ## Objectif
 L'objectif de cet exercice est de configurer Vault pour stocker des secrets, établir des politiques d'accès, et déployer
