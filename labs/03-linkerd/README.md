@@ -154,22 +154,7 @@ qu'il ne soit accessible que par notre service principal.
 1. Appliquez la définition pour le serveur goldie-body :
 
 ```bash
-kubectl apply -n red -f - <<EOF
----
-apiVersion: policy.linkerd.io/v1beta3
-kind: Server
-metadata:
-  name: goldie-body-http
-  labels:
-    app.kubernetes.io/instance: red-body
-    kubernetes.io/instance: body-server
-spec:
-  podSelector:
-    matchLabels:
-      app.kubernetes.io/name: little-red-riding-hood-goldie-main
-  port: http
-  proxyProtocol: HTTP/1
-EOF
+kubectl apply -n red -f manifests/server.yaml
 ```
 
 2. Assurez-vous que le serveur a été correctement créé :
@@ -185,27 +170,19 @@ kubectl get server -n red
 ```bash
 linkerd viz authz -n red deploy/little-red-riding-hood-goldie-body
 ```
+
+```text
+ROUTE    SERVER                       AUTHORIZATION                  UNAUTHORIZED  SUCCESS     RPS  LATENCY_P50  LATENCY_P95  LATENCY_P99  
+default  default:all-unauthenticated  default/all-unauthenticated          0.0rps  100.00%  0.1rps          3ms          3ms          3ms  
+probe    default:all-unauthenticated  default/probe                        0.0rps  100.00%  0.2rps          1ms          1ms          1ms  
+probe    red-body-server              default/probe                        0.0rps  100.00%  0.2rps          2ms          2ms          2ms  
+
+```
 5. Appliquez la définition suivante pour autoriser l'accès à la route uniquement pour les déploiements associés à 
 notre service account :
 
 ```bash
-kubectl apply -n red -f - <<EOF
----
-apiVersion: policy.linkerd.io/v1beta1
-kind: ServerAuthorization
-metadata:
-  name: goldie-body-http
-  labels:
-    app.kubernetes.io/instance: red-body
-    kubernetes.io/instance: body-server
-spec:
-  server:
-    name: goldie-body-http
-  client:
-    meshTLS:
-      serviceAccounts:
-        - name: little-red-riding-hood-goldie-main
-EOF
+kubectl apply -n red -f manifests/authorization.yaml
 ```
 
 Accédez à nouveau à la page web, l'image de Goldie devrait apparaître.
@@ -215,7 +192,12 @@ Accédez à nouveau à la page web, l'image de Goldie devrait apparaître.
 ```bash
 kubectl run debug --rm -it --image=busybox --restart=Never --command -- wget goldie-body.red.svc.cluster.local:9007/images/body.svg
 ```
-
+```text
+Connecting to goldie-body.red.svc.cluster.local:9007 (10.111.87.241:9007)
+wget: server returned error: HTTP/1.1 403 Forbidden
+pod "debug" deleted
+pod default/debug terminated (Error)
+```
 ## Conclusion
 Linkerd permet de sécuriser vos services en gérant les communications inter-containers et en imposant des politiques 
 d'accès. Cette configuration est essentielle pour maintenir une architecture microservices sécurisée et fonctionnelle. 

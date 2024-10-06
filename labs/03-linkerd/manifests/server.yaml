@@ -1,0 +1,14 @@
+---
+apiVersion: policy.linkerd.io/v1beta3
+kind: Server
+metadata:
+  namespace: red
+  name: red-body-server
+  labels:
+    app.kubernetes.io/instance: red-body
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: red-body
+  port: http
+  proxyProtocol: HTTP/1

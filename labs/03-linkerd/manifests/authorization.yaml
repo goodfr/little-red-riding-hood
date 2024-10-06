@@ -1,0 +1,14 @@
+apiVersion: policy.linkerd.io/v1beta1
+kind: ServerAuthorization
+metadata:
+  namespace: red
+  name: red-body-server-http
+  labels:
+    app.kubernetes.io/name: body-http
+spec:
+  server:
+    name: red-body-server
+  client:
+    meshTLS:
+      serviceAccounts:
+        - name: little-red-riding-hood-goldie-main
