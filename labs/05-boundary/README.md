@@ -1,4 +1,4 @@
-# Sécurisation de l'API du Cluster avec HashiCorp Boundary
+# Exercice 05 : Sécurisation de l'API du Cluster avec HashiCorp Boundary
 
 ![Boundary](../../images/boundary_logo.png)
 
@@ -165,3 +165,8 @@ cluster. En utilisant Boundary, vous pouvez gérer de manière dynamique l'accè
 d'intrusion et améliorant la sécurité globale de l'environnement. Cette configuration vous permettra de fournir un accès
 contrôlé et auditée à vos services tout en préservant la convivialité nécessaire pour les utilisateurs et les 
 développeurs. Profitez de la tranquillité d'esprit que procure une architecture sécurisée grâce à Boundary.
+
+> Tout comme Mère Grand a su protéger ses secrets grâce à des mesures de sécurité appropriées, vous vous assurez que 
+> seul le Petit Chaperon Rouge peut accéder aux informations sensibles, éloignant ainsi le loup des précieux trésors du 
+> royaume numérique.
+

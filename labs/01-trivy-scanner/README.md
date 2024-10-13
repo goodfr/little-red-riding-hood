@@ -1,6 +1,11 @@
-# Exercice : Analyse des Vulnérabilités avec Trivy
+# Exercice 01 : Analyse des Vulnérabilités avec Trivy
 
 ![Trivy Scanner](../../images/trivy_logo.png)
+
+Dans le royaume technologique de Mère Grand, l’innocente Goldie Rouge voyageait à travers des terres parsemées 
+d'applications, certaines coûteuses à exploiter. Cependant, un danger rôdait : les vulnérabilités cachées dans les 
+images de conteneurs qui pouvaient potentiellement compromettre la tranquillité du village. Mère Grand savait qu'elle 
+devait garantir la sécurité de ses précieuses applications, tout en protégeant son village des menaces invisibles.
 
 ## But de l'Exercice
 
@@ -16,7 +21,12 @@ dans les images de conteneurs dès la phase de construction, avant même qu'elle
 
 Cela signifie que les développeurs peuvent corriger les problèmes de sécurité en amont, réduisant ainsi les risques 
 associés à des déploiements de logiciels vulnérables. En intégrant Trivy dans le pipeline CI/CD, les équipes bénéficient
-d'une visibilité immédiate sur les failles potentielles, ce qui favorise des pratiques de développement plus sécurisées. Dans le contexte d'exécution Kubernetes, Trivy se révèle tout aussi précieux, permettant une surveillance continue des images déjà déployées. Il analyse régulièrement les conteneurs en cours d'exécution et génère des rapports sur les vulnérabilités, ce qui aide les équipes à réagir rapidement aux nouvelles menaces. Ainsi, Trivy joue un rôle clé dans une stratégie de sécurité proactive, offrant une couverture tant lors des phases de développement que d'exécution au sein de l'environnement Kubernetes.
+d'une visibilité immédiate sur les failles potentielles, ce qui favorise des pratiques de développement plus sécurisées. 
+Dans le contexte d'exécution Kubernetes, Trivy se révèle tout aussi précieux, permettant une surveillance continue des 
+images déjà déployées. Il analyse régulièrement les conteneurs en cours d'exécution et génère des rapports sur les 
+vulnérabilités, ce qui aide les équipes à réagir rapidement aux nouvelles menaces. Ainsi, Trivy joue un rôle clé dans 
+une stratégie de sécurité proactive, offrant une couverture tant lors des phases de développement que d'exécution au 
+sein de l'environnement Kubernetes.
 
 Le cycle de vie de nos applications ne s'arrête pas à la phase de développement et de construction. Il est donc 
 essentiel de surveiller les vulnérabilités des images de conteneurs en production, afin de garantir un niveau de 
@@ -123,3 +133,16 @@ Ensuite, vérifiez le rapport d'audit sur la configuration des déploiements dan
 kubectl get configauditreports -n red -o wide
 ```
 
+## Conclusion
+
+Cet exercice vous a permis d'utiliser Trivy pour analyser les images de conteneurs de votre cluster Kubernetes et 
+détecter les vulnérabilités connues. En intégrant Trivy dans votre chaîne CI/CD et en surveillant activement vos 
+images déployées, vous renforcez considérablement la sécurité de vos applications. Cela vous aide à identifier et à 
+corriger les failles potentielles avant qu'elles ne deviennent des menaces sérieuses, protégeant ainsi votre i
+nfrastructure contre les assauts invisibles.
+
+>À l'instar de Goldie Rouge qui doit se méfier des dangers qui l'entourent, vous avez armé votre royaume numérique 
+>avec Trivy, une sentinelle vigilante qui veille à ce que seules les applications sûres puissent apparaître dans le 
+>jardin de Mère Grand.
+
+Suite de l'aventure : [02 - Vault pour la Gestion des Secrets](../02-vault/README.md)

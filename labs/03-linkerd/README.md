@@ -1,19 +1,26 @@
-# Installation et Configuration de Linkerd
+# Exercice 03 : Installation et Configuration de Linkerd
 
-## Édito
+![Linkerd](../../images/linkerd_logo.png)
 
-## Objectif
-Dans un royaume technologique en constante évolution, de nombreuses applications cohabitent, chacune jouant un rôle 
-crucial pour le bon fonctionnement du royaume. Cependant, entre ces applications réside un danger invisible : le loup, 
-qui menace la sécurité des communications et l'intégrité des données. 
-Pour faire face à cette menace, nos héros doivent unir leurs forces et recourir aux meilleurs outils afin de défendre 
-leur territoire numérique. C'est ainsi que Linkerd entre en scène, promettant de transformer le paysage de la gestion 
-du trafic entre services.
+Dans un royaume technologique en constante évolution, le Petit Chaperon Rouge se déplaçait entre de nombreuses 
+applications, toutes jouant un rôle crucial dans la vie du village. Cependant, un danger invisible rôdait : le loup, 
+qui menaçait la sécurité des communications et l'intégrité des données échangées. Pour protéger son royaume et assurer 
+la sécurité des échanges, le Petit Chaperon Rouge savait qu'elle devait déployer des mesures de protection efficaces.
 
-En déployant Linkerd, nous allons établir un maillage de services capable de sécuriser les échanges grâce à des 
-communications chiffrées, tout en assurant une observabilité accrue grâce à des métriques en temps réel. Cet exercice 
-vous apprendra à installer et à configurer Linkerd afin que les applications puissent fonctionner en toute sécurité, 
-sans craindre les attaques du loup.
+## Le but de l'exercice
+
+L'objectif de cet exercice est d'installer et de configurer Linkerd sur votre cluster Kubernetes. Vous apprendrez à 
+établir un maillage de services capable de sécuriser les échanges entre applications, tout en facilitant l'observabilité 
+grâce à des métriques en temps réel.
+
+## Pourquoi utiliser Linkerd ?
+
+Linkerd est un outil essentiel pour gérer les communications entre microservices dans les environnements cloud-native. 
+Il apporte une sécurité accrue grâce à l’implémentation de TLS mutuel, assurant que seul le trafic autorisé est échangé 
+entre les services. En outre, Linkerd offre des fonctionnalités d’observabilité qui vous permettent de visualiser le 
+comportement de vos services en temps réel et d'identifier rapidement les problèmes de performance ou de sécurité. En 
+adoptant Linkerd, vous renforcez la résilience et la sécurité de votre architecture microservices, garantissant ainsi 
+un fonctionnement fluide et sécurisé.
 
 ## Installation de Linkerd
 
@@ -199,7 +206,15 @@ pod "debug" deleted
 pod default/debug terminated (Error)
 ```
 ## Conclusion
+
 Linkerd permet de sécuriser vos services en gérant les communications inter-containers et en imposant des politiques 
 d'accès. Cette configuration est essentielle pour maintenir une architecture microservices sécurisée et fonctionnelle. 
 Pour aller plus loin, vous pouvez explorer des fonctionnalités avancées comme les timeouts, les circuit breakers, 
 et bien plus, en consultant la documentation de Linkerd.
+
+> Tout comme le Petit Chaperon Rouge a su se garder du loup en empruntant le chemin des sentiers sécurisés, vous avez 
+> armé votre royaume numérique avec Linkerd, un bouclier efficace contre les dangers invisibles. Grâce à votre vigilance
+> et aux outils appropriés, vous pouvez maintenant parcourir le royaume numérique en toute sécurité, en protégeant vos
+> secrets et en garantissant la tranquillité d'esprit de tous les habitants du village.
+ 
+Suite de l'aventure : [04 - Gestion des Politiques de Sécurité avec Kyverno](../04-kyverno/README.md)

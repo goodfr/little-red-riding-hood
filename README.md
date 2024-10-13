@@ -150,7 +150,7 @@ plus sûre.
 Pour obtenir une version dite "zero trust" de votre cluster, nous vous conseillons de suivre l'ordre des déploiements et 
 en particulier de faire l'étape `boundary` en dernier.
 
-## Trivy
+## 01 - Trivy
 ![Trivy](images/trivy_logo.png)
 
 Trivy est un scanner de vulnérabilités open-source spécialement conçu pour les environnements de conteneurisation
@@ -168,7 +168,7 @@ les images déployées sur notre cluster et générer des rapports sur les vuln�
 
 [Step Trivy](labs/01-trivy-scanner)
 
-## Vault
+## 02 - Vault
 ![Vault](images/Vault_logo.png)
 
 Hashicorp Vault est un outil open-source de gestion des secrets qui permet de stocker, gérer et distribuer des 
@@ -186,7 +186,7 @@ l'accès aux secrets stockés dans le cluster Kubernetes uniquement aux applicat
 [Step Vault](labs/02-vault)
 
 
-## Linkerd
+## 03 - Linkerd
 
 ![Linkerd](images/linkerd_logo.png)
 
@@ -201,7 +201,7 @@ microservices.
 
 [Step Linkerd](labs/03-linkerd)
 
-### Kyverno - Moteur de Politique pour Kubernetes
+### 04 - Kyverno - Moteur de Politique pour Kubernetes
 ![Kyverno](images/kyverno_logo.png)
 
 Kyverno est un moteur de politique open-source pour Kubernetes qui automatise la gestion et l'application de politiques
@@ -215,7 +215,7 @@ déploiements sur votre cluster.
 
 [Step Kyverno](labs/04-kyverno)
 
-## Boundary
+## 05 - Boundary
 
 ![Boundary](images/boundary_logo.png)
 
@@ -228,3 +228,21 @@ grâce à Boundary. Nous pourrons enfin avoir un journal d'audit traçant tous l
 qui y accède et surtout quelles actions sont faites sur notre cluster.
 
 [Step Boundary](labs/05-boundary)
+
+# Conclusion
+
+À travers notre aventure inspirée du conte du Petit Chaperon Rouge, nous avons appris à naviguer dans un royaume 
+technologique complexe, où la sécurité et la conformité des applications sont primordiales. Grâce aux différents outils 
+tels que HashiCorp Boundary, Kyverno, Trivy, Vault et Linkerd, nous avons renforcé notre infrastructure Kubernetes, 
+protégeant ainsi nos précieux secrets des dangers invisibles du loup.
+
+Tout comme Goldie Rouge a su se prémunir contre les dangers en s'appuyant sur la sagesse de Mère Grand, vous avez 
+maintenant acquis les compétences nécessaires pour sécuriser vos applications et garantir des communications chiffrées. 
+En intégrant ces outils dans votre environnement, vous êtes devenus les gardiens de votre royaume numérique, prêts à 
+faire face aux menaces et à assurer la tranquillité d'esprit de tous les habitants du village.
+
+Néanmoins, les aventures de notre petite Goldie ne fait que commencer dans le monde du Zero Trust. De nombreux autres
+dangers et défis l'attendent, mais avec votre aide, elle pourra surmonter tous les obstacles et protéger son royaume.
+
+Nous espérons que cet atelier vous a plu et que vous avez apprécié cette aventure dans le monde du Zero Trust. 
+N'hésitez pas à nous donner un feedback sur cet atelier et à partager vos expériences avec nous.

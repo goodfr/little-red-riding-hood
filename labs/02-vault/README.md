@@ -1,5 +1,6 @@
-# Utilisation de Vault pour l'Injection Dynamique de Secrets
-## Edito
+# Exercice 02 : Utilisation de Vault pour l'Injection Dynamique de Secrets
+
+![Vault](../../images/Vault_logo.png)
 
 Dans un village paisible, Mère Grand protégeait jalousement ses secrets, dissimulant ses digicodes d'entrée dans un 
 coffre-fort. Pour assurer sa sécurité, elle savait qu'elle devait éviter que le maléfique loup, toujours en quête 
@@ -14,9 +15,17 @@ peuvent accéder aux informations sensibles, tout en empêchant le loup de contr
 Ensemble, nous prendrons des mesures pour renforcer la sécurité de vos applications dans un environnement Kubernetes, 
 assurant ainsi la tranquillité d'esprit de tous.
 
-## Objectif
+## But de l'Exercice
 L'objectif de cet exercice est de configurer Vault pour stocker des secrets, établir des politiques d'accès, et déployer
 une application Kubernetes qui peut récupérer ces secrets de manière sécurisée.
+
+## Pourquoi utiliser Vault ?
+
+HashiCorp Vault est un système de gestion des secrets qui permet de stocker et de contrôler l'accès aux informations 
+sensibles. En intégrant Vault dans votre infrastructure Kubernetes, vous pourrez automatiser le traitement des secrets, 
+ce qui réduit les risques d'exposition accidentelle et permet de gérer les accès de manière granulaire. Vault vous aide 
+également à répondre aux exigences de sécurité et de conformité en vous permettant de contrôler qui peut accéder à quoi 
+et quand.
 
 ## Installation
 
@@ -197,4 +206,14 @@ kubectl logs deployments/little-red-riding-hood-goldie-body -n red
 ```
 
 
-Mère Grand peut maintenant être rassurée, car seul le Petit Chaperon Rouge a accès à son secret.
+## Conclusion
+En configurant Vault, vous avez instauré une méthode sécurisée pour stocker et accéder aux secrets sensibles dans votre 
+environnement Kubernetes. Grâce à Vault, vous avez établi un mécanisme d'injection dynamique de secrets qui réduit les 
+risques d'exposition ainsi que les erreurs humaines. Vous êtes désormais armés pour gérer les secrets de manière 
+centrale et sécurisée, tout en permettant un accès contrôlé aux applications qui en ont besoin.
+
+> Comme Mère Grand a réussi à s’assurer que seul le Petit Chaperon Rouge pouvait accéder à ses trésors cachés, vous 
+> avez mis en place un coffre-fort numérique à l'aide de Vault, veillant à ce que les secrets restent bien protégés 
+> des griffes du loup.
+ 
+Suite de l'aventure : [03 - Service Mesh avec Linkerd](../03-linkerd/README.md)

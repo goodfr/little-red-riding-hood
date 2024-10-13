@@ -1,5 +1,10 @@
-# 01 - Sécurisation et Conformité avec Kyverno
+# Exercice 04 : Sécurisation et Conformité avec Kyverno
 ![Kyverno](../../images/kyverno_logo.png)
+
+Dans un village technologique où le Petit Chaperon Rouge voyageait, chaque application était comme un habitant ayant sa 
+propre histoire et ses propres responsabilités. Cependant, un jour, un loup rusé s'est glissé dans le village, menaçant 
+la sécurité des communications et l'intégrité de ces applications. La tranquillité du village était en jeu, et le Petit 
+Chaperon Rouge savait qu'elle devait agir rapidement pour préserver l'harmonie de son royaume.
 
 ## But de l'Exercice
 
@@ -198,3 +203,16 @@ Si vous avez besoin de déboguer votre configuration, vous pouvez exécuter les 
 kubectl run busybox --rm -ti --image=busybox -- /bin/sh
 wget --no-check-certificate --spider --timeout=1 https://kyverno-svc.kyverno.svc:443/health/liveness
 ```
+
+## Conclusion
+
+Vous avez appris à déployer Kyverno dans votre cluster Kubernetes et à appliquer des politiques de sécurité et de 
+conformité. Grâce à Kyverno, vous avez non seulement renforcé la sécurité de votre environnement, mais vous avez 
+également instauré un cadre qui garantit que seules les applications conformes peuvent être déployées.
+
+> Tout comme le Petit Chaperon Rouge a su protéger son village en établissant des règles claires pour se défendre 
+> contre le danger du loup, vous avez mis en place des politiques avec Kyverno qui protègent votre royaume numérique 
+> des configurations non sécurisées et des menaces potentielles. Grâce à votre vigilance et à vos actions, le village 
+> peut maintenant prospérer en toute tranquillité, loin des griffes du loup.
+
+Suite de l'aventure : [05 - Sécurisation de l'API du Cluster avec HashiCorp Boundary](../05-boundary/README.md)
