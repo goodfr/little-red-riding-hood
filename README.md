@@ -2,10 +2,10 @@
 
 ![Little Red Riding Hood](images/little-red-riding-hood.png)
 
-Bienvenue dans cet atelier intéractif sur la sécurisation des applications dans un environnement Kubernetes, 
-conçu autour du principe du Zero Trust. À travers une métaphore inspirée du conte classique du `Petit Chaperon Rouge`, 
-nous allons explorer comment notre petite goldie rouge ira voir sa mère-grand dans la maison de captain kube en adoptant 
-les meilleures pratiques de sécurité.
+>Bienvenue dans cet atelier intéractif sur la sécurisation des applications dans un environnement Kubernetes, 
+>conçu autour du principe du Zero Trust. À travers une métaphore inspirée du conte classique du `Petit Chaperon Rouge`, 
+>nous allons explorer comment notre petite goldie rouge ira voir sa mère-grand dans la maison de captain kube en adoptant 
+>les meilleures pratiques de sécurité.
 
 ## Objectifs
 
