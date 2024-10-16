@@ -4,7 +4,12 @@ replicaCount: 1
 
 # Necessary in EKS with custom Network CNI plugin
 # https://cert-manager.io/docs/installation/compatibility/#aws-eks
-# hostNetwork: true
+# admissionController:
+#   hostNetwork: true
+# backgroundController:
+#   hostNetwork: true
+# cleanupController:
+#   hostNetwork: true
 
 config:
 

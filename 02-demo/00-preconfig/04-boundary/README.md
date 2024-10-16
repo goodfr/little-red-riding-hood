@@ -1,4 +1,87 @@
-# Bounary
+# Boundary
+
+## Configure Vault for dynamic creds
+
+export VAULT_ADDR='http://vault.aws.sphinxgaia.jeromemasson.fr' 
+export VAULT_TOKEN=$(grep 'Initial Root Token:' $ROOT_DIR/02-demo/00-preconfig/03-vault/unseal-key.txt | awk '{print $NF}')
+
+kubectl apply -f vault_config/cluster-role.yaml
+export VAULT_SVC_ACCT_TOKEN="$(kubectl create token vault -n vault)"
+
+export INCLUSTER_KUBERNETES_API=$(kubectl get svc kubernetes -o jsonpath={.spec.clusterIP})
+
+vault secrets enable -path=k8sboundary kubernetes
+
+vault write -f k8sboundary/config \
+  kubernetes_host=https://${INCLUSTER_KUBERNETES_API}:443 \
+  service_account_jwt=$VAULT_SVC_ACCT_TOKEN
+
+## Boundary config
+
+vault policy write boundary-controller vault_config/boundary-controller-policy.hcl
+
+BOUNDARY_CRED_STORE_TOKEN=$(vault token create \
+    -no-default-policy=true \
+    -policy="boundary-controller" \
+    -orphan=true \
+    -period=20m \
+    -renewable=true \
+    -format=json | jq -r '.auth | .client_token') && echo $BOUNDARY_CRED_STORE_TOKEN
+
+
+
+## test Vault configuration
+
+vault write k8sboundary/roles/auto-managed-sa-and-role \
+allowed_kubernetes_namespaces="*" \
+token_default_ttl="10m" \
+generated_role_rules='{"rules":[{"apiGroups":[""],"resources":["pods"],"verbs":["list"]}]}'
+
+
+### Extract cluster connection
+
+kubectl config view --minify --raw --output 'jsonpath={..cluster.certificate-authority-data}' | base64 -d > ca.crt
+export KIND_CLUSTER_API=$(kubectl config view --minify --raw  --output 'jsonpath={..cluster.server}')
+
+export REMOTE_USER_TOKEN=$(vault write k8sboundary/creds/auto-managed-sa-and-role kubernetes_namespace=red -format=json | jq -r .data.service_account_token)
+
+unset kubeconfig temporary
+
+export KUBECONFIG=$(pwd)/vault_config/empty.yaml
+
+kubectl get node --certificate-authority=ca.crt --server=$KIND_CLUSTER_API --token=$REMOTE_USER_TOKEN
+
+
+### Configure transit secret for boundary (optional)
+
+export VAULT_ADDR='http://vault.kind.cluster' 
+export VAULT_TOKEN=$(grep 'Initial Root Token:' $ROOT_DIR/02-demo/00-preconfig/03-vault/unseal-key.txt | awk '{print $NF}')
+
+vault policy write boundary-transit vault_config/boundary-transit.hcl
+
+vault secrets enable -path=boundary transit
+
+vault write -f boundary/keys/kms
+
+Test
+
+vault read boundary/keys/kms
+
+### Create periodic token for boundary kms (optional)
+
+vault token create -policy="boundary-transit" -period=24h
+
+Test
+
+vault read boundary/keys/kms
+vault write boundary/encrypt/kms plaintext=$(base64 <<< "test-kms-key")
+
+
+## Install Boundary
+
+
+
+kubectl create ns boundary
 
 ```
 terraform init
@@ -8,26 +91,32 @@ Run terraform apply against the kubernetes terraform module:
 
 ```
 
-aws-vault exec custom -- kubectl create ns boundary
-aws-vault exec custom -- terraform apply -target module.kubernetes -auto-approve
+kubectl create ns boundary
+terraform apply -target module.kubernetes -auto-approve
 
-export BOUNDARY_ADDR="http://a4df28fab8b0a43b892465b3f3753b16-114862541.eu-west-1.elb.amazonaws.com:9200" 
-aws-vault exec custom -- terraform apply -auto-approve
+export BOUNDARY_ADDR="http://boundary-controller.aws.sphinxgaia.jeromemasson.fr:9200" 
+terraform apply -auto-approve
 ```
 
-Expose all 3 Boundary services running on minikube, on your local host using `kubectl port-forward` (you'll
+## Expose boundary with LB
+
+
+
+## Expose boundary with port-forward
+
+Expose all 3 Boundary services running on kind, on your local host using `kubectl port-forward` (you'll
 need to do this in 3 separate long running shells):
 
 ```
-$ kubectl port-forward pods/$(kubectl get pods | grep boundary | cut -d " " -f 1) 9200:9200
+$ kubectl port-forward pods/$(kubectl get pods -n boundary | grep boundary | cut -d " " -f 1) --address 0.0.0.0 9200:9200 -n boundary
 Forwarding from 127.0.0.1:9200 -> 9200
 Forwarding from [::1]:9200 -> 9200
 
-$ kubectl port-forward pods/$(kubectl get pods | grep boundary | cut -d " " -f 1) 9201:9201
+$ kubectl port-forward pods/$(kubectl get pods -n boundary | grep boundary | cut -d " " -f 1) --address 0.0.0.0 9201:9201 -n boundary
 Forwarding from 127.0.0.1:9201 -> 9201
 Forwarding from [::1]:9201 -> 9201
 
-$ kubectl port-forward pods/$(kubectl get pods | grep boundary | cut -d " " -f 1) 9202:9202
+$ kubectl port-forward pods/$(kubectl get pods -n boundary | grep boundary | cut -d " " -f 1) --address 0.0.0.0 9202:9202 -n boundary
 Forwarding from 127.0.0.1:9202 -> 9202
 Forwarding from [::1]:9202 -> 9202
 Handling connection for 9202
@@ -94,8 +183,8 @@ Now login:
 
 ```
 $ boundary authenticate password \
-  -login-name=mark \
-  -password=foofoofoo \
+  -login-name=sphinxgaia \
+  -password=$(cat .boundary_pass) \
   -auth-method-id=${BOUNDARY_AUTH_METHOD_ID}
 ```
 

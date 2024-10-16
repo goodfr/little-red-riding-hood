@@ -114,7 +114,8 @@ spec:
         - 'sleep 10'
       containers:
       - name: little-red-riding-hood-goldie-body
-        image:  "ghcr.io/sphinxgaia/little-red-riding-hood-goldie-body:green"
+        image:  "ghcr.io/sphinxgaia/little-red-riding-hood-goldie-body:basic"
+        # image:  "ghcr.io/sphinxgaia/little-red-riding-hood-goldie-body:green"
         imagePullPolicy: Always
         resources: {}
         ports:
@@ -125,7 +126,8 @@ spec:
           - name: PORT
             value: "9000"
           - name: "VERSION"
-            value: "green"
+            value: "basic"
+            # value: "green"
         livenessProbe:
           httpGet:
             path: /metrics
@@ -207,27 +209,4 @@ spec:
                 operator: In
                 values:
                 - enabled
----
-# Source: little-red-riding-hood-goldie/templates/main-ingress.yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: ma-little-red-riding-hood-goldie
-  labels:
-    helm.sh/chart: little-red-riding-hood-goldie-0.1.0
-    app.kubernetes.io/version: "0.0.1"
-    app.kubernetes.io/managed-by: Helm
-  annotations:
-    kubernetes.io/ingress.class: traefik
-spec:
-  rules:
-    - host: "green-trust.sphinxgaia.jeromemasson.fr"
-      http:
-        paths:
-          - path: /
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: ma-little-red-riding-hood-goldie-main
-                port:
-                  number: 80
+

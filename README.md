@@ -39,11 +39,11 @@ export CIVO_TOKEN=$(cat ~/.civo_token)
 
 ### Play sequences
 
-asciinema play 01-infra-aws --speed 4
+asciinema play replay/2021/01-infra-aws --speed 4
 
-asciinema play 00-preconfig-kyverno --speed 4
-asciinema play 00-preconfig-trivy --speed 2
-asciinema play 00-preconfig-vault --speed 2
-asciinema play 00-preconfig-boundary --speed 2
-asciinema play 01-demo-apps 
-asciinema play 02-demo-apps
+asciinema play replay/2021/00-preconfig-kyverno --speed 4
+asciinema play replay/2021/00-preconfig-trivy --speed 2
+asciinema play replay/2021/00-preconfig-vault --speed 2
+asciinema play replay/2021/00-preconfig-boundary --speed 2
+asciinema play replay/2021/01-demo-apps 
+asciinema play replay/2021/02-demo-apps

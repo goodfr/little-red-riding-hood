@@ -2,8 +2,4 @@
 
 ### Install Kyverno
 
-
-
 ### Install Boundary
-
-### Install Litmus

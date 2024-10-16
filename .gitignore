@@ -2,3 +2,10 @@
 *.terraform.lock*
 *terraform.tfstate*
 *kubeconfig
+*vault.key
+*vault.crt
+*vault.csr
+*vault.ca
+*vault-csr.conf
+*unseal-key*
+*.boundary_vault_token

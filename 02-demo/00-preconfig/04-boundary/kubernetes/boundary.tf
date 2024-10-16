@@ -116,24 +116,16 @@ resource "kubernetes_deployment" "boundary" {
   }
 }
 
-data "kubernetes_service" "boundary" {
-  metadata {
-    name = "boundary-controller"
-    namespace = "boundary"
-  }
-
-  depends_on = [
-    kubernetes_service.boundary_controller
-  ]
-}
-
-
 resource "kubernetes_service" "boundary_controller" {
   metadata {
     name = "boundary-controller"
     namespace = "boundary"
     labels = {
       app = "boundary-controller"
+    }
+    annotations = {
+      "external-dns.alpha.kubernetes.io/hostname" = "boundary.aws.sphinxgaia.jeromemasson.fr"
+
     }
   }
 

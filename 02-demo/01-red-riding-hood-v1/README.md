@@ -1,15 +1,12 @@
+# Install Red Riding Hood
 
-# RED
+kubectl delete -f ../00-preconfig/01-kyverno/red-riding-hood-red-restricted.yaml
 
-export HELMPATH=/mnt/c/Users/styli/Documents/k8s/sphinxgaia/git/goldies/deploy/_goldies/helm/red-riding-hood/
+kubectl create ns red 
+kubectl apply -n red -f manifest-red.yaml
 
-aws-vault exec custom -- kubectl create ns red 
-aws-vault exec custom -- helm upgrade --install red --namespace red -f overrides-red.yaml $HELMPATH
-
-aws-vault exec custom -- kubectl get svc -n red
-
-aws-vault exec custom -- kubectl create ns green 
-aws-vault exec custom -- helm upgrade --install green --namespace green -f overrides-ma.yaml $HELMPATH
+kubectl create ns green 
+kubectl apply -n green -f manifest-ma.yaml
 
 
-aws-vault exec custom -- kubectl get svc -n green
+kubectl apply -f ./00-preconfig/01-kyverno/red-riding-hood-red-restricted.yaml

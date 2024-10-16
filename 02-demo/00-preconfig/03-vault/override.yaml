@@ -21,11 +21,11 @@ injector:
 
 server:
   ingress:
-    enabled: true
+    enabled: false
     ingressClassName: "nginx"
 
     hosts:
-      - host: vault.kind.cluster
+      - host: vault.aws.sphinxgaia.jeromemasson.fr
         paths: []
 
   # extraEnvironmentVars is a list of extra environment variables to set with the stateful set. These could be
@@ -95,7 +95,7 @@ server:
 
         seal "awskms" {
           region     = "eu-west-1"
-          kms_key_id = "de887123-fbb7-4164-98af-e142eb338281"
+          kms_key_id = "13ccda41-a101-412f-83fe-47b77b0dee49"
         }
 
         storage "raft" {
@@ -136,6 +136,9 @@ server:
 ui:
   enabled: true
   serviceNodePort: null
+  serviceType: "LoadBalancer"
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: "vault.aws.sphinxgaia.jeromemasson.fr"
   externalPort: 8200
 
   # For Added Security, edit the below

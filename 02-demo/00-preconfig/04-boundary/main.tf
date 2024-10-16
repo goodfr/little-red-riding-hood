@@ -1,10 +1,14 @@
+variable "boundary_addr" {
+  default = "http://boundary.aws.sphinxgaia.jeromemasson.fr"
+}
+
 module "kubernetes" {
   source = "./kubernetes"
 }
 
 module "boundary" {
   source = "./boundary"
-  addr   = "http://${module.kubernetes.boundary_loadbalancer}:9200"
+  addr   = var.boundary_addr
 
 }
 

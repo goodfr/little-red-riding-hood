@@ -14,7 +14,7 @@ controller {
 	database {
 			url = "env://BOUNDARY_PG_URL"
 	}
-	public_cluster_addr = "localhost"
+	public_cluster_addr = "boundary.aws.sphinxgaia.jeromemasson.fr"
 }
 
 worker {
@@ -22,13 +22,16 @@ worker {
 	description = "A worker for a kubernetes demo"
 	address = "localhost"
     controllers = ["localhost"]
-	public_addr = "localhost"
+	public_addr = "boundary.aws.sphinxgaia.jeromemasson.fr"
 }
 
 listener "tcp" {
 	address = "0.0.0.0"
 	purpose = "api"
-	tls_disable = true
+	tls_disable = true  
+	
+	cors_enabled = true
+  	cors_allowed_origins = ["http://boundary.aws.sphinxgaia.jeromemasson.fr", "serve://boundary"]
 }
 
 listener "tcp" {
