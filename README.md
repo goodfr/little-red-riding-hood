@@ -95,7 +95,7 @@ export KUBECONFIG=$(pwd)/kubeconfig
 Lancer un container Docker avec l'image de tooling pour tester l'accès à votre cluster Kubernetes.
 
 ```bash
-docker run --rm -v $KUBECONFIG:/home/tooling/.kube/config -v $REPO_ROOT_DIR/labs:/labs -it ghcr.io/ddrugeon/little-red-riding-hood-tooling:latest
+docker run --rm -v $KUBECONFIG:/home/tooling/.kube/config -v $REPO_ROOT_DIR/labs:/apps/labs -it ghcr.io/ddrugeon/little-red-riding-hood-tooling:latest
 ```
 
 Testez l'accès à votre cluster Kubernetes en exécutant la commande suivante :
