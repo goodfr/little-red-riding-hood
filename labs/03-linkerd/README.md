@@ -98,28 +98,6 @@ kubectl -n red get po -o jsonpath='{.items[0].spec.containers[*].name}' | grep l
 linkerd viz authz -n red deploy
 ```
 
-## Accesser le Dashboard de Linkerd
-
-1. Accédez à l'interface web du dashboard pour visualiser les métriques :
-
-```bash
-linkerd viz dashboard --address 127.0.0.1
-```
-
-2. Ouvrez ensuite le dashboard dans votre navigateur à l'adresse http://localhost:50750.
-
-3. Choisissez le namespace `red` pour visualiser les statistiques de trafic sur vos déploiements.
-
-4. Sélectionnez le déploiement little-red-riding-hood-goldie-body, puis dans un autre terminal, 
-générez du trafic sur l'ingress :
-
-> **Note :** Modifiez l'URL de votre ingress en fonction de ce que vous avez configuré.
-
-```bash
-while [ true ]; do curl -sS http://vcluster-test-red.aws.sphinxgaia.jeromemasson.fr > /dev/null ; done;
-```
-5. Observez l'augmentation du trafic sur le déploiement.
-
 ## Sécurisation avec mTLS
 
 L'un des avantages d'un service mesh est la sécurisation des communications via TLS mutuel, sans avoir à 
