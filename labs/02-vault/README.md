@@ -181,8 +181,10 @@ kubectl get deploy -n red
 Examinez les logs du pod pour identifier les éventuelles erreurs :
 
 ```bash
+kubectl get pod -n red
 kubectl logs little-red-riding-hood-goldie-body-xxx -n red -c vault-agent-init
 ```
+> **Note** : Remplacez xxx par l'ID du pod qui est dans le status Init.
 
 ### Finalisation du Déploiement
 Pour permettre l'accès au secret pour le bon service account, appliquez le manifeste success/manifest-red.yaml :
@@ -194,7 +196,7 @@ kubectl apply -f manifest-red.yaml
 Répétez l'injection de configuration depuis Vault :
 
 ```bash
-kubectl patch deployment -n red little-red-riding-hood-goldie-body --patch "$(cat patch.yaml)"
+kubectl patch deployment -n red little-red-riding-hood-goldie-body --patch-file patch.yaml
 ```
 
 Vérifiez une dernière fois l'état du déploiement :
