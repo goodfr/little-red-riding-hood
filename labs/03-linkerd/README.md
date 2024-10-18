@@ -72,31 +72,6 @@ linkerd viz install | kubectl apply -f -
 linkerd check
 ```
 
-## Déploiement des Applications (Optionnel)
-
-> **Note:** 
-> cette étape est optionnelle, si vous avez déjà fait l'étape 02-vault
-
-Nous allons maintenant déployer les applications et les services nécessaires :
-
-1. Naviguer vers le Répertoire de l'Application :
-
-```bash
-cd /labs/01-red-riding-hood-v1
-```
-
-2. Appliquez le manifeste pour créer les services et déploiements :
-
-```bash
-kubectl apply -f manifest-red.yaml -n red
-```
-
-3. Vérifiez que les déploiements se déroulent sans problème :
-
-```bash
-kubectl -n red get deploy
-```
-
 ## Ajout du Maillage avec Linkerd
 
 1. Vérifiez que les pods existants sur votre namespace ne sont pas gérés par Linkerd :

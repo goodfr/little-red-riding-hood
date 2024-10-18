@@ -48,14 +48,15 @@ Changez de répertoire pour accéder à la configuration de Vault :
 cd /labs/02-vault
 ```
 
-3. Installer Vault via Helm :
+3. Modifier le fichier override.yaml pour modifier l'url du vault en remplaçant vcluster-user1 par vcluster-app<votre numéro de cluster>.
+4. Installer Vault via Helm :
 Ajoutez le dépôt Helm de HashiCorp et installez Vault :
 
 ```bash
 helm repo add hashicorp https://helm.releases.hashicorp.com
 helm repo update
 ```
-4. Créez le namespace pour Vault :
+5. Créez le namespace pour Vault :
 
 ```bash
 kubectl create namespace vault
@@ -69,25 +70,30 @@ helm upgrade --install vault hashicorp/vault -n vault -f override.yaml
 
 ### Unseal du Vault
 Notre serveur Vault est opérationnel, mais il doit être "descellé" (unseal). Voici les étapes à suivre :
-
-1. Accéder au conteneur Vault :
-Lancez un conteneur pour utiliser la CLI de Vault :
-
-```bash
-kubectl exec -n vault vault-0 -it -- sh
-```
-2. Initialiser et désceller Vault :
+1. Initialiser et désceller Vault :
 À l'intérieur du conteneur, exécutez les commandes suivantes :
 
 ```bash
-cd /home/vault
-export VAULT_ADDR="http://127.0.0.1:8200"
-vault operator init -key-shares=1 -key-threshold=1 > key-vault.txt
+kubectl exec -it vault-0 -n vault -- sh -c "VAULT_ADDR='http://127.0.0.1:8200' vault operator init -key-shares=1 -key-threshold=1" > key-vault.txt
 sleep 2
-vault operator unseal $(grep 'Key 1:' key-vault.txt | awk '{print $NF}')
-sleep 2
-vault login $(grep 'Initial Root Token:' key-vault.txt | awk '{print $NF}')
+kubectl cp key-vault.txt vault-0:/vault/data/key-vault.txt -n vault
+
+Executer les commandes suivantes pour désceller Vault :
+```bash
+kubectl exec -it vault-0 -n vault -- sh
+export VAULT_ADDR='http://127.0.0.1:8200' 
+grep 'Key 1:' /vault/data/key-vault.txt | awk '{print $NF}'
+vault operator unseal
 ```
+
+copier et coller la clé obtenue pour désceller Vault.
+
+```bash
+grep 'Initial Root Token:' /vault/data/key-vault.txt | awk '{print $NF}'
+sleep 2
+vault login
+```
+copier et coller la clé obtenue pour désceller Vault.
 
 ### Création d'un Dépôt de Secrets
 1. Créez un chemin dans Vault où seront stockés les secrets :
@@ -101,6 +107,7 @@ vault secrets list -detailed
 Créez une politique qui permettra d'accéder au secret grand-ma-secret :
 
 ```bash
+cd /vault/data
 cat <<EOF > little-red-policy.hcl
 path "little-red/data/grand-ma-secret" { capabilities = ["read"] }
 EOF
@@ -113,10 +120,13 @@ vault policy write little-red little-red-policy.hcl
 vault auth enable kubernetes
 vault write auth/kubernetes/config kubernetes_host="https://$KUBERNETES_PORT_443_TCP_ADDR:443"
 vault write auth/kubernetes/role/little-red \
-    bound_service_account_names=red-little-red-riding-hood-goldie-body \
+    bound_service_account_names=little-red-riding-hood-goldie-body \
     bound_service_account_namespaces=red \
     policies=little-red ttl=24h
-```
+vault write auth/kubernetes/role/little-red \
+    bound_service_account_names=little-red-riding-hood-goldie-main \
+    bound_service_account_namespaces=red \
+    policies=little-red ttl=24h```
 
 ### Ajout d'un Secret
 1. Ajoutez un secret dans le chemin configuré :

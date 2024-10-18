@@ -226,11 +226,11 @@ metadata:
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: vcluster-test-red.aws.sphinxgaia.jeromemasson.fr # give your domain name here
+    external-dns.alpha.kubernetes.io/hostname: vcluster-app1-red.aws.sphinxgaia.jeromemasson.fr # give your domain name here
 spec:
   ingressClassName: nginx 
   rules:
-    - host: "vcluster-test-red.aws.sphinxgaia.jeromemasson.fr"
+    - host: "vcluster-app1-red.aws.sphinxgaia.jeromemasson.fr"
       http:
         paths:
           - path: /

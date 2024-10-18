@@ -14,7 +14,7 @@ metadata:
     helm.sh/chart: little-red-riding-hood-goldie-0.1.0
     app.kubernetes.io/version: "0.0.1"
     app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: little-red-riding-hood-goldie-body
+    app.kubernetes.io/name: little-red-riding-hood-goldie-main
     app.kubernetes.io/instance: red-body
 ---
 # Source: little-red-riding-hood-goldie/templates/main-server_sa.yaml
