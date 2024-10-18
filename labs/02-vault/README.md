@@ -135,7 +135,7 @@ exit
 Accéder au Répertoire de l'Application :
 
 ```bash
-cd /labs/manifests/
+cd /labs/02-vault/manifests/
 ```
 > **Note** : Modifiez le manifeste static/manifest-wolf.yaml pour correspondre à votre nom de cluster, 
 > notamment pour les lignes d'ingress.
@@ -152,7 +152,7 @@ kubectl get deploy -n red
 ```
 
 3. Configurer l'Injection des Secrets :
-Pour activer l'injection des secrets depuis Vault, ajoutez les annotations suivantes au déploiement :
+Pour activer l'injection des secrets depuis Vault, nous allons ajouter les annotations suivantes au déploiement :
 
 ```yaml
 spec:
@@ -164,10 +164,10 @@ spec:
         vault.hashicorp.com/agent-grand-ma-secret.txt: 'little-red/data/grand-ma-secret'  
 ```
 
-Ensuite, appliquez le patch :
+Appliquez le patch pour les ajouter au déploiement :
 
 ```bash
-kubectl patch deployment -n red little-red-riding-hood-goldie-body --patch "$(cat patch.yaml)"
+kubectl patch deployment -n red little-red-riding-hood-goldie-body --patch-file patch.yaml
 ```
 
 
