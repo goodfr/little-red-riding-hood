@@ -153,6 +153,8 @@ Vous pouvez accéder à l'application en exécutant la commande suivante :
 curl -H "Host: vcluster-app<number>-red.aws.sphinxgaia.jeromemasson.fr" http://vcluster-app<number>-red.aws.sphinxgaia.jeromemasson.fr
 ```
 
+> **Note**: Si vous ne pouvez pas accéder à votre site, vous pouvez faire un reset du cache DNS de votre machine.
+
 Une fois la version 1 déployée, nous allons ajouter petit à petit des couches de sécurité pour rendre notre application
 plus sûre.
 
