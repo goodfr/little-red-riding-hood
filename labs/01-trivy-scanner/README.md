@@ -45,7 +45,7 @@ docker run --rm -v $KUBECONFIG:/home/tooling/.kube/config -v $REPO_ROOT_DIR/labs
 
 Déplacez-vous dans le dossier du lab :
 ```bash
-cd /labs/02-trivy-scanner
+cd /labs/01-trivy-scanner
 ```
 
 Vérifiez que vous avez bien accès à votre cluster Kubernetes :
@@ -75,12 +75,12 @@ Une fois le repo connu de helm, nous pouvons installer la charte avec nos valeur
 
 ```bash
 kubectl create ns trivy-system
-helm upgrade --install trivy-operator aqua/trivy-operator \
+helm upgrade --install trivy-operator aquasec/trivy-operator \
     --namespace trivy-system \
     --set="trivy.ignoreUnfixed=true" \
     --set="operator.scanJobsConcurrentLimit=2" \
-    --set="operator.scanJobsRetryDelay=90s"
-     --version 0.24.0
+    --set="operator.scanJobsRetryDelay=90s" \
+    --version 0.24.0
 ```
 
 L'installation de la charte Helm met en place l'opérateur Trivy, qui permet de récupérer les rapports d'audit et de 
