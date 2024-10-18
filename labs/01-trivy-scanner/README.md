@@ -78,6 +78,8 @@ kubectl create ns trivy-system
 helm upgrade --install trivy-operator aquasec/trivy-operator \
     --namespace trivy-system \
     --set="trivy.ignoreUnfixed=true" \
+    --set="global.image.registry=public.ecr.aws" \
+    --set="trivy.dbRegistry=public.ecr.aws" \
     --set="operator.scanJobsConcurrentLimit=2" \
     --set="operator.scanJobsRetryDelay=90s" \
     --version 0.24.0
