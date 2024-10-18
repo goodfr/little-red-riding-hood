@@ -178,7 +178,7 @@ mais de nouvelles vulnérabilités peuvent apparaître au moment du déploiement
 d'installer Trivy pour scanner les images lors du déploiement sur le cluster. Nous utiliserons cet outil pour vérifier
 les images déployées sur notre cluster et générer des rapports sur les vulnérabilités trouvées.
 
-[Step Trivy](labs/01-trivy-scanner)
+[Step Trivy](labs/01-trivy-scanner/README.md)
 
 ## 02 - Vault
 ![Vault](images/Vault_logo.png)
@@ -195,7 +195,7 @@ problèmes de sécurité. Des solutions comme Vault permettent de stocker les se
 distribuer aux applications de manière sécurisée au moment de leur démarrage. Nous utiliserons Vault pour contrôler
 l'accès aux secrets stockés dans le cluster Kubernetes uniquement aux applications qui en ont besoin.
 
-[Step Vault](labs/02-vault)
+[Step Vault](labs/02-vault/README.md)
 
 
 ## 03 - Linkerd
@@ -211,7 +211,7 @@ entre nos différents microservices et garantir la confidentialité et l'intégr
 également les fonctionnalités de monitoring et de traçabilité de Linkerd pour surveiller les golden métriques de nos
 microservices.
 
-[Step Linkerd](labs/03-linkerd)
+[Step Linkerd](labs/03-linkerd/README.md)
 
 ### 04 - Kyverno - Moteur de Politique pour Kubernetes
 ![Kyverno](images/kyverno_logo.png)
@@ -225,7 +225,7 @@ de fichiers YAML, et peuvent être appliquées au niveau du namespace ou du clus
 Nous vous proposons d'installer Kyverno sur le cluster pour définir une politique de sécurité pour interdire certains
 déploiements sur votre cluster.
 
-[Step Kyverno](labs/04-kyverno)
+[Step Kyverno](labs/04-kyverno/README.md)
 
 ## 05 - Boundary
 
@@ -239,7 +239,7 @@ Actuellement, l'API du cluster Kubernetes est ouverte sur internet. Nous vous pr
 grâce à Boundary. Nous pourrons enfin avoir un journal d'audit traçant tous les appels à l'api du cluster et savoir
 qui y accède et surtout quelles actions sont faites sur notre cluster.
 
-[Step Boundary](labs/05-boundary)
+[Step Boundary](labs/05-boundary/README.md)
 
 # Conclusion
 
