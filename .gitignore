@@ -156,3 +156,9 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+##vcluster
+
+**/vcluster-images.tar.gz
+**/vcluster-*
+
+**/key-vault.txt

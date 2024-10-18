@@ -78,6 +78,8 @@ kubectl create ns trivy-system
 helm upgrade --install trivy-operator aqua/trivy-operator \
     --namespace trivy-system \
     --set="trivy.ignoreUnfixed=true" \
+    --set="operator.scanJobsConcurrentLimit=2" \
+    --set="operator.scanJobsRetryDelay=90s"
      --version 0.24.0
 ```
 
