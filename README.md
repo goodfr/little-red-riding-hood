@@ -123,6 +123,21 @@ Créez un namespace `red` pour déployer l'application `red riding hood v1`.
 kubectl create namespace red
 ```
 
+Avant de déployer l'application, vous devez ajouter un label sur au moins un des noeuds du cluster pour qu'il puisse
+être schédulé sur ce noeud. Vous pouvez utiliser la commande suivante pour ajouter un label `red-archi=enabled` sur un 
+des noeuds.
+
+Lister les noeuds existants:
+```bash
+kubectl get nodes -o custom-columns=NAME:{.metadata.name}
+```
+
+Puis sélectionner un noeud et ajouter le label `red-archi=enabled` sur ce noeud.
+
+```bash
+kubectl label nodes <node-name> red-archi=enabled
+```
+
 Modifier le fichier de configuration `manifest-red.yaml` pour définir l'URL de l'application `red riding hood v1`
 dans le champ `spec.ingress.host`. Remplacer `vcluster-test-red.aws.sphinxgaia.jeromemasson.fr` par l'URL de votre
 cluster Kubernetes dédié à savoir `vcluster-app<number>-red.aws.sphinxgaia.jeromemasson.fr` où <number> correspond au
