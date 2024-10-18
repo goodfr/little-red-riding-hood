@@ -125,8 +125,8 @@ kubectl create namespace red
 
 Modifier le fichier de configuration `manifest-red.yaml` pour définir l'URL de l'application `red riding hood v1`
 dans le champ `spec.ingress.host`. Remplacer `vcluster-test-red.aws.sphinxgaia.jeromemasson.fr` par l'URL de votre
-cluster Kubernetes dédié à savoir `<moncluster-name>-red.aws.sphinxgaia.jeromemasson.fr`. Déployez l'application 
-`red riding hood v1` dans le namespace `red`.
+cluster Kubernetes dédié à savoir `vcluster-app<number>-red.aws.sphinxgaia.jeromemasson.fr` où <number> correspond au
+ numéro de votre cluster dédié. Déployez l'application `red riding hood v1` dans le namespace `red`.
 
 ```bash
 kubectl apply -f labs/manifests/01-red-riding-hood-v1/manifest-red.yaml -n red
@@ -135,7 +135,7 @@ kubectl apply -f labs/manifests/01-red-riding-hood-v1/manifest-red.yaml -n red
 Vous pouvez accéder à l'application en exécutant la commande suivante :
 
 ```bash
-curl -H "Host: <moncluster-name>-red.aws.sphinxgaia.jeromemasson.fr" http://<moncluster-name>-red.aws.sphinxgaia.jeromemasson.fr
+curl -H "Host: vcluster-app<number>-red.aws.sphinxgaia.jeromemasson.fr" http://vcluster-app<number>-red.aws.sphinxgaia.jeromemasson.fr
 ```
 
 Une fois la version 1 déployée, nous allons ajouter petit à petit des couches de sécurité pour rendre notre application
