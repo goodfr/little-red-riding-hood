@@ -1,0 +1,47 @@
+cidr: 10.0.0.0/16
+bootstrap_extra_args_sys: |
+  # The admin host container provides SSH access and runs with "superpowers".
+  # It is disabled by default, but can be disabled explicitly.
+  [settings.host-containers.admin]
+  enabled = false
+
+  # The control host container provides out-of-band access via SSM.
+  # It is enabled by default, and can be disabled if you do not expect to use SSM.
+  # This could leave you with no way to access the API and change settings on an existing node!
+  [settings.host-containers.control]
+  enabled = true
+
+  [settings.kubernetes.node-labels]
+  ingress = "allowed"
+  red-archi = "enabled"
+
+  [settings.kubernetes.node-taints]
+  "CriticalAddonsOnly" = "true:NoExecute"
+bootstrap_extra_args: |
+  # The admin host container provides SSH access and runs with "superpowers".
+  # It is disabled by default, but can be disabled explicitly.
+  [settings.host-containers.admin]
+  enabled = false
+
+  # The control host container provides out-of-band access via SSM.
+  # It is enabled by default, and can be disabled if you do not expect to use SSM.
+  # This could leave you with no way to access the API and change settings on an existing node!
+  [settings.host-containers.control]
+  enabled = true
+
+  [settings.kubernetes.node-labels]
+  "goldie" = "enabled"
+  ingress = "allowed"
+
+  [settings.kubernetes.node-taints]
+  "node.cilium.io/agent-not-ready" = "true:NoExecute"
+
+# Jumbo frame
+post_bootstrap_user_data: ""
+# post_bootstrap_user_data: |
+#   sudo ip link set dev eth0 mtu 9001
+#   echo "MTU=9001" >> /etc/sysconfig/network-scripts/ifcfg-eth0
+#   echo "request subnet-mask, broadcast-address, time-offset, routers, domain-name, domain-search, domain-name-servers, host-name, nis-domain, nis-servers, ntp-servers;" >> /etc/dhcp/dhclient.conf
+
+cluster_addons:
+  aws-ebs-csi-driver: {}

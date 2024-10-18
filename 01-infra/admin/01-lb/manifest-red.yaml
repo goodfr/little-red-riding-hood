@@ -1,0 +1,251 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: red
+---
+# Source: little-red-riding-hood-goldie/templates/body-server_sa.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: red-little-red-riding-hood-goldie-body
+  namespace: red
+  labels:
+    helm.sh/chart: little-red-riding-hood-goldie-0.1.0
+    app.kubernetes.io/version: "0.0.1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: little-red-riding-hood-goldie-body
+    app.kubernetes.io/instance: red-body
+---
+# Source: little-red-riding-hood-goldie/templates/main-server_sa.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: red-little-red-riding-hood-goldie-main
+  namespace: red
+  labels:
+    helm.sh/chart: little-red-riding-hood-goldie-0.1.0
+    app.kubernetes.io/version: "0.0.1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: little-red-riding-hood-goldie-main
+    app.kubernetes.io/instance: red-main
+---
+# Source: little-red-riding-hood-goldie/templates/body-server_svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  # connection between main and body / must be static for the moment
+  name: goldie-body
+  namespace: red
+  labels:
+    kubernetes.io/instance: body-server
+    helm.sh/chart: little-red-riding-hood-goldie-0.1.0
+    app.kubernetes.io/version: "0.0.1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: little-red-riding-hood-goldie-body
+    app.kubernetes.io/instance: red-body
+spec:
+  type: ClusterIP
+  ports:
+    # connection between main and body / must be static for the moment
+    - port: 9007
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: little-red-riding-hood-goldie-body
+    app.kubernetes.io/instance: red-body
+---
+# Source: little-red-riding-hood-goldie/templates/main-server_svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: red-little-red-riding-hood-goldie-main
+  namespace: red
+  labels:
+    kubernetes.io/instance: main-server
+    helm.sh/chart: little-red-riding-hood-goldie-0.1.0
+    app.kubernetes.io/version: "0.0.1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: little-red-riding-hood-goldie-main
+    app.kubernetes.io/instance: red-main
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: little-red-riding-hood-goldie-main
+    app.kubernetes.io/instance: red-main
+---
+# Source: little-red-riding-hood-goldie/templates/body-server.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: little-red-riding-hood-goldie-body
+  namespace: red
+  labels:
+    app.kubernetes.io/component: body-server
+    bobinette: pull
+    helm.sh/chart: little-red-riding-hood-goldie-0.1.0
+    app.kubernetes.io/version: "0.0.1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: little-red-riding-hood-goldie-body
+    app.kubernetes.io/instance: red-body
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: little-red-riding-hood-goldie-body
+      app.kubernetes.io/instance: red-body
+  template:
+    metadata:
+      labels:
+        bobinette: pull
+        app.kubernetes.io/component: body-server
+        app.kubernetes.io/name: little-red-riding-hood-goldie-body
+        app.kubernetes.io/instance: red-body
+    spec:
+      terminationGracePeriodSeconds: 5
+      serviceAccountName: red-little-red-riding-hood-goldie-body
+      securityContext:
+        {}
+      initContainers:
+      - name: sleep
+        image: alpine
+        command: 
+        - sh 
+        - -c 
+        - 'sleep 10'
+      containers:
+      - name: little-red-riding-hood-goldie-body
+        image:  "ghcr.io/sphinxgaia/little-red-riding-hood-goldie-body:red"
+        imagePullPolicy: Always
+        resources: {}
+        ports:
+        - name: http
+          containerPort: 9000
+          protocol: TCP
+        env:
+          - name: PORT
+            value: "9000"
+          - name: "VERSION"
+            value: "red"
+        livenessProbe:
+          httpGet:
+            path: /metrics
+            port: http
+        readinessProbe:
+          httpGet:
+            path:  /metrics
+            port: http
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: red-archi
+                operator: In
+                values:
+                - enabled
+---
+# Source: little-red-riding-hood-goldie/templates/main-server.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: little-red-riding-hood-goldie-main
+  namespace: red
+  labels:
+    app.kubernetes.io/component: main-server
+    bobinette: pull
+    helm.sh/chart: little-red-riding-hood-goldie-0.1.0
+    app.kubernetes.io/version: "0.0.1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: little-red-riding-hood-goldie-main
+    app.kubernetes.io/instance: red-main
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: little-red-riding-hood-goldie-main
+      app.kubernetes.io/instance: red-main
+  template:
+    metadata:
+      labels:
+        bobinette: pull
+        app.kubernetes.io/component: main-server
+        app.kubernetes.io/name: little-red-riding-hood-goldie-main
+        app.kubernetes.io/instance: red-main
+    spec:
+      terminationGracePeriodSeconds: 5
+      serviceAccountName: red-little-red-riding-hood-goldie-main
+      securityContext:
+        {}
+      containers:
+      - name: little-red-riding-hood-goldie-main
+        image:  "ghcr.io/sphinxgaia/little-red-riding-hood-goldie-main:red"
+        imagePullPolicy: Always
+        resources: {}
+        ports:
+        - name: http
+          containerPort: 9000
+          protocol: TCP
+        env:
+          - name: PORT
+            value: "9000"
+          - name: "VERSION"
+            value: "red"
+        livenessProbe:
+          httpGet:
+            path:  /
+            port: http
+        readinessProbe:
+          httpGet:
+            path:  /
+            port: http
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: red-archi
+                operator: In
+                values:
+                - enabled
+---
+# Source: little-red-riding-hood-goldie/templates/main-ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: little-red-riding-hood-goldie
+  namespace: red
+  labels:
+    helm.sh/chart: little-red-riding-hood-goldie-0.1.0
+    app.kubernetes.io/version: "0.0.1"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/healthcheck-port: "80"
+    alb.ingress.kubernetes.io/healthcheck-path: /
+    alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
+    # alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}, {"HTTP": 8080}, {"HTTPS": 8443}]'
+    alb.ingress.kubernetes.io/group.name: global
+    external-dns.alpha.kubernetes.io/hostname: red.aws.sphinxgaia.jeromemasson.fr # give your domain name here
+spec:
+  ingressClassName: alb 
+  rules:
+    - host: "red.aws.sphinxgaia.jeromemasson.fr"
+      http:
+        paths:
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: red-little-red-riding-hood-goldie-main
+                port:
+                  number: 80
+  tls:
+  - hosts: 
+    - red.aws.sphinxgaia.jeromemasson.fr

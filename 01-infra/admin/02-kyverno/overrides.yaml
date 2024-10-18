@@ -1,0 +1,35 @@
+---
+# 3 replicas for High Availability
+replicaCount: 3
+
+# Necessary in EKS with custom Network CNI plugin
+# https://cert-manager.io/docs/installation/compatibility/#aws-eks
+# hostNetwork: true
+hostNetwork: true
+
+config:
+
+  webhooks:
+    # Exclude namespaces from scope
+    - namespaceSelector:
+        matchExpressions:
+        - key: kubernetes.io/metadata.name
+          operator: NotIn
+          values:
+            - kube-system
+            - kyverno
+            - litmus
+            - vault
+            - trivy-system
+            - calico-system
+            - cert-manager
+            - ingress-nginx
+            - tigera-operator
+            - boundary
+            - red
+            - green
+    # Exclude objects from scope
+    - objectSelector:
+        matchExpressions:
+        - key: webhooks.kyverno.io/exclude
+          operator: DoesNotExist
