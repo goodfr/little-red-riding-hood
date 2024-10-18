@@ -162,3 +162,5 @@ Temporary Items
 **/vcluster-*
 
 **/key-vault.txt
+kubeconfig
+montoken-vault.txt

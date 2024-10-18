@@ -68,9 +68,9 @@ Dans un premier temps, vous devez stocker le token d'accès à Vault dans un fic
  vous sera fourni par les organisateurs de l'atelier.
 
 ```bash
-export MONCLUSTER="<moncluster-name>"
+export MONCLUSTER="<number>"
 
-docker container run -it --rm ghcr.io/ddrugeon/little-red-riding-hood-tooling:latest -c "curl -s    --request POST     --data '{\"password\":\"$MONCLUSTER\"}' http://vault.aws.sphinxgaia.jeromemasson.fr/v1/auth/userpass/login/$MONCLUSTER | jq -r .auth.client_token" > montoken-vault.txt
+docker container run -it --rm ghcr.io/ddrugeon/little-red-riding-hood-tooling:latest -c "curl -s    --request POST     --data '{\"password\":\"vcluster-app$MONCLUSTER\"}' http://vault.aws.sphinxgaia.jeromemasson.fr/v1/auth/userpass/login/vcluster-app$MONCLUSTER | jq -r .auth.client_token" > montoken-vault.txt
 ```
 
 Ensuite, exécuter les commandes suivantes pour récupérer votre fichier de configuration `kubeconfig` :
@@ -78,7 +78,7 @@ Ensuite, exécuter les commandes suivantes pour récupérer votre fichier de con
 ```bash
 curl -H "X-Vault-Request: true" -H "X-Vault-Token: $(cat montoken-vault.txt)" http://vault.aws.sphinxgaia.jeromemasson.fr/v1/auth/token/lookup-self
 
-docker container run -it --rm ghcr.io/ddrugeon/little-red-riding-hood-tooling:latest -c "curl --silent -H \"X-Vault-Request: true\" -H \"X-Vault-Token: $(cat montoken-vault.txt)\" http://vault.aws.sphinxgaia.jeromemasson.fr/v1/vclusters/data/$MONCLUSTER | jq .data.data.kubeconfig" > kubeconfig
+docker container run -it --rm ghcr.io/ddrugeon/little-red-riding-hood-tooling:latest -c "curl --silent -H \"X-Vault-Request: true\" -H \"X-Vault-Token: $(cat montoken-vault.txt)\" http://vault.aws.sphinxgaia.jeromemasson.fr/v1/vclusters/data/vcluster-app$MONCLUSTER | jq .data.data.kubeconfig | base64 -d" > kubeconfig
 ```
 
 > ⚠️ **Note**: Remplacez `<moncluster-name>` par le nom de votre cluster Kubernetes dédié.
